@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE phpdox>
+<phpdox xmlns="http://xml.phpdox.net/config">
+	<bootstrap>
+		<require file="./vendor/autoload.php" />
+	</bootstrap>
+
+	<project name="Caribu MVC API Documentation" source="${basedir}/src" workdir="${basedir}/build/api/xml">
+	    <collector publiconly="false" backend="parser">
+	        <include mask="*.php" />
+	        <exclude mask="" />
+	
+	        <inheritance resolve="true">
+	        </inheritance>
+	    </collector>
+
+		<generator output="${basedir}/build/api">
+			<enrich base="${basedir}/build">
+				<source type="build" />
+				<source type="checkstyle">
+					<file name="logs/checkstyle.xml" />
+				</source>
+				<source type="pmd">
+					<file name="logs/pmd.xml" />
+				</source>
+				<source type="phploc">
+					<file name="logs/phploc.xml" />
+				</source>
+				<source type="phpunit">
+					<coverage path="coverage/xml" />
+					<filter directory="${phpDox.project.source}" />
+				</source>
+				<!-- add git vcs information -->
+                <!--
+                <source type="git">
+                    <git binary="/usr/bin/git" />
+                    <history enabled="true" limit="15" cache="${phpDox.project.workdir}/gitlog.xml" />
+                </source>
+                -->
+			</enrich>
+
+			<build engine="html" output="html" />
+		</generator>
+	</project>
+</phpdox>
