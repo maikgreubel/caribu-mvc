@@ -40,6 +40,13 @@ class Response
     private $type = 'text/html';
 
     /**
+     * Additional headers to be send to client
+     *
+     * @var array
+     */
+    private $additionalHeaders = array();
+
+    /**
      * Retrieve the response body as string
      *
      * @return string The response content
@@ -165,5 +172,29 @@ class Response
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Append an additional header to list
+     *
+     * @param string $headerName The name of the header
+     * @param string $headerValue The value of the header
+     *
+     * @return Response The current response
+     */
+    public function addHeader($headerName, $headerValue)
+    {
+        $this->additionalHeaders[$headerName] = $headerValue;
+        return $this;
+    }
+
+    /**
+     * Retrieve the list of additional headers
+     *
+     * @return array The list of headers
+     */
+    public function getAdditionalHeaders()
+    {
+        return $this->additionalHeaders;
     }
 }

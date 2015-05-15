@@ -26,7 +26,6 @@ use \Psr\Log\NullLogger;
  * calling the Application::serve() function
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
  *         This file is part of Caribu MVC package
  */
 final class Application implements LoggerAwareInterface
@@ -141,10 +140,9 @@ final class Application implements LoggerAwareInterface
      *            The default controller name if nothing is provided by request
      * @param string $defaultAction
      *            The default action name if nothing is provided by request
-     *
      * @return Application Current application instance
      */
-    public final function setDefaults($defaultController = 'Index', $defaultAction = 'index')
+    public function setDefaults($defaultController = 'Index', $defaultAction = 'index')
     {
         $this->defaultController = $defaultController;
         $this->defaultAction = $defaultAction;
@@ -166,7 +164,7 @@ final class Application implements LoggerAwareInterface
      *
      * @return Application Current application instance
      */
-    public final function registerView($view, $order = null, $applicationName = 'default')
+    public function registerView($view, $order = null, $applicationName = 'default')
     {
         if (! class_exists($view)) {
             throw new ViewException("No such view class {view} found", array(
@@ -224,7 +222,6 @@ final class Application implements LoggerAwareInterface
         $best = null;
 
         if (count($this->views[$applicationName]) > 0) {
-
             foreach ($this->views[$applicationName] as $orderLevel => $views) {
                 foreach ($views as $view) {
                     assert($view instanceof View);
@@ -339,6 +336,11 @@ final class Application implements LoggerAwareInterface
             header(sprintf("%s", $responseCode));
             header(sprintf("Content-Length: %d", $responseLen));
             header(sprintf("Content-Type: %s", $responseType));
+
+            foreach($response->getAdditionalHeaders() as $headerName => $headerValue) {
+                header(sprintf("%s: %s", $headerName, $headerValue));
+            }
+
             echo $responseContent;
         }
 
