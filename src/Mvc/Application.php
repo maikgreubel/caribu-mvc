@@ -335,7 +335,7 @@ final class Application implements LoggerAwareInterface
         if ($send) {
             header(sprintf("%s", $responseCode));
             header(sprintf("Content-Length: %d", $responseLen));
-            header(sprintf("Content-Type: %s;charset=%s", $responseType));
+            header(sprintf("Content-Type: %s", $responseType));
 
             foreach ($response->getAdditionalHeaders() as $headerName => $headerValue) {
                 header(sprintf("%s: %s", $headerName, $headerValue));
