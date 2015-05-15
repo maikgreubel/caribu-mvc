@@ -50,7 +50,7 @@ abstract class AbstractView implements View
      *
      * @return \Nkey\Caribu\Mvc\View\View
      */
-    public final function getViewSettings()
+    final public function getViewSettings()
     {
         $rf = new \ReflectionClass($this);
 
@@ -78,14 +78,10 @@ abstract class AbstractView implements View
     }
 
     /**
-     * Checks whether the given controller matches this view
-     *
-     * @param string $controller
-     *            The name of controller to match the view for
-     *
-     * @return boolean true in case of view is responsible the controller, false otherwise
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::matchController()
      */
-    public final function matchController($controller)
+    final public function matchController($controller)
     {
         return (
             in_array($controller, $this->controllers) ||
@@ -95,16 +91,21 @@ abstract class AbstractView implements View
     }
 
     /**
-     * Checks whether the given action matches this view
-     *
-     * @param string $action
-     *            The name of action to match the view for
-     *
-     * @return boolean true in case of view is responsible the action, false otherwise
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::matchAction()
      */
-    public final function matchAction($action)
+    final public function matchAction($action)
     {
         return (in_array($action, $this->actions) || in_array('any', $this->actions) || count($this->actions) == 0);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::matchBoth()
+     */
+    final public function matchBoth($controller, $action)
+    {
+        return $this->matchController($controller) && $this->matchAction($action);
     }
 
     /**
@@ -112,7 +113,7 @@ abstract class AbstractView implements View
      *
      * @return string The name of view
      */
-    public final function getViewSimpleName()
+    final public function getViewSimpleName()
     {
         return $this->viewName;
     }

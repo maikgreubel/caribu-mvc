@@ -40,6 +40,13 @@ class Response
     private $type = 'text/html';
 
     /**
+     * Response encoding
+     *
+     * @var string
+     */
+    private $encoding = 'utf-8';
+
+    /**
      * Additional headers to be send to client
      *
      * @var array
@@ -196,5 +203,28 @@ class Response
     public function getAdditionalHeaders()
     {
         return $this->additionalHeaders;
+    }
+
+    /**
+     * Set the response content encoding
+     *
+     * @param string $encoding
+     *
+     * @return Response The current response
+     */
+    public function setEncoding($encoding)
+    {
+        $this->encoding = $encoding;
+        return $this;
+    }
+
+    /**
+     * Retrieve the content encoding
+     *
+     * @return string
+     */
+    public function getEncoding()
+    {
+        return $this->encoding;
     }
 }

@@ -225,7 +225,7 @@ final class Application implements LoggerAwareInterface
             foreach ($this->views[$applicationName] as $orderLevel => $views) {
                 foreach ($views as $view) {
                     assert($view instanceof View);
-                    if ($view->matchController($request->getController()) && $view->matchAction($request->getAction())) {
+                    if ($view->matchBoth($request->getController(), $request->getAction())) {
                         $best[$orderLevel] = $view;
                         continue 2;
                     }
@@ -322,7 +322,7 @@ final class Application implements LoggerAwareInterface
 
         $responseCode = $response->getHttpCode();
         $responseLen = strlen($response);
-        $responseType = $response->getType();
+        $responseType = sprintf('%s;%s', $response->getType(), $response->getEncoding());
         $responseContent = strval($response);
 
         $this->getLogger()->debug("[{remote}] Response is type of {type}, length of {length} and code {code}", array(
@@ -335,9 +335,9 @@ final class Application implements LoggerAwareInterface
         if ($send) {
             header(sprintf("%s", $responseCode));
             header(sprintf("Content-Length: %d", $responseLen));
-            header(sprintf("Content-Type: %s", $responseType));
+            header(sprintf("Content-Type: %s;charset=%s", $responseType));
 
-            foreach($response->getAdditionalHeaders() as $headerName => $headerValue) {
+            foreach ($response->getAdditionalHeaders() as $headerName => $headerValue) {
                 header(sprintf("%s: %s", $headerName, $headerValue));
             }
 

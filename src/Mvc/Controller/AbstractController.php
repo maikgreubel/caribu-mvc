@@ -70,11 +70,60 @@ abstract class AbstractController
     protected $viewParams = array();
 
     /**
+     * Parse the parameters of action
+     *
+     * @param \ReflectionMethod $action
+     *
+     * @return boolean true if parameters meets conditions for a valid action method, false otherwise
+     */
+    private function parseParameters(\ReflectionMethod $action)
+    {
+        $params = $action->getParameters();
+        if (count($params) < 1) {
+            return false;
+        }
+
+        $param = $params[0];
+        assert($param instanceof \ReflectionParameter);
+        if (! ($class = $param->getClass()) || $class->getName() != 'Nkey\Caribu\Mvc\Controller\Request') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Parse the settings out of annotations
+     *
+     * @param \ReflectionMethod $action
+     */
+    private function parseAnnotations(\ReflectionMethod $action)
+    {
+        if ($action->isConstructor() || $action->isDestructor() || $action->isStatic() || $action->isFinal()) {
+            return;
+        }
+
+        $rfMethod = new \ReflectionMethod($this, $action->getName());
+        $anno = $rfMethod->getDocComment();
+
+        if ($anno && preg_match('#@webMethod#', $anno)) {
+            $this->actions[] = $action->getName();
+            return;
+        }
+
+        if (!$this->parseParameters($action)) {
+            return;
+        }
+
+        $this->actions[] = $action->getName();
+    }
+
+    /**
      * Get the controller prepared for service
      *
      * @return \Nkey\Caribu\Mvc\Controller\AbstractController The controller instance
      */
-    public final function getControllerSettings()
+    final public function getControllerSettings()
     {
         $rf = new \ReflectionClass($this);
 
@@ -84,30 +133,9 @@ abstract class AbstractController
         $this->response->setTitle($this->controllerName);
 
         $actions = $rf->getMethods(\ReflectionMethod::IS_PUBLIC);
+
         foreach ($actions as $action) {
-            assert($action instanceof \ReflectionMethod);
-            if (! $action->isConstructor() && ! $action->isDestructor() && ! $action->isStatic() && ! $action->isFinal()) {
-
-                $rfMethod = new \ReflectionMethod($this, $action->getName());
-                $anno = $rfMethod->getDocComment();
-                if ($anno) {
-                    if (preg_match('#@webMethod#', $anno)) {
-                        $this->actions[] = $action->getName();
-                        continue;
-                    }
-                }
-
-                $params = $action->getParameters();
-                if (count($params) < 1) {
-                    continue;
-                }
-                $param = $params[0];
-                assert($param instanceof \ReflectionParameter);
-                if (! ($class = $param->getClass()) || $class->getName() != 'Nkey\Caribu\Mvc\Controller\Request') {
-                    continue;
-                }
-                $this->actions[] = $action->getName();
-            }
+            $this->parseAnnotations($action);
         }
 
         return $this;
@@ -120,7 +148,7 @@ abstract class AbstractController
      *
      * @return boolean true if the action exists in controller, false otherwise
      */
-    public final function hasAction($action)
+    final public function hasAction($action)
     {
         if (count($this->actions) === 0) {
             return false;
@@ -135,7 +163,7 @@ abstract class AbstractController
      *
      * @return \Nkey\Caribu\Mvc\Controller\Response The response
      */
-    public final function call($action, Request $request, View $view)
+    final public function call($action, Request $request, View $view)
     {
         $this->request = $request;
 
@@ -167,8 +195,18 @@ abstract class AbstractController
      *
      * @return string Name of controller
      */
-    public final function getControllerSimpleName()
+    final public function getControllerSimpleName()
     {
         return $this->controllerName;
+    }
+
+    /**
+     * Retrieve the namespace of controller
+     *
+     * @return string The controller namespace
+     */
+    final public function getControllerNamespace()
+    {
+        return $this->nameSpace;
     }
 }

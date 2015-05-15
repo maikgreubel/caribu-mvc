@@ -70,50 +70,59 @@ class Request
     }
 
     /**
-     * Parse an uri into its request parts
+     * Parse the remote host variables to determine client address
      *
-     * @param string $uri
-     *            The uri to parse
-     *
-     * @return \Nkey\Caribu\Mvc\Controller\Request The new created request
+     * @param Request $request
      */
-    public static function parse($uri, $defaultController = 'Index', $defaultAction = 'index')
+    private static function parseRemoteHost(Request &$request)
     {
-        $req = new self($defaultController, $defaultAction);
-        $req->origin = $uri;
-
         if (isset($_SERVER['REMOTE_ADDR'])) {
-            $req->remoteHost = $_SERVER['REMOTE_ADDR'];
+            $request->remoteHost = $_SERVER['REMOTE_ADDR'];
         }
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $req->remoteHost = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            $request->remoteHost = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
+    }
 
-        // Save the request parameters for later usage and rewrite the uri
-        $savedRequestParams = array();
-        if (strpos($uri, '?')) {
-            parse_str(substr($uri, strpos($uri, '?') + 1), $savedRequestParams);
-            $uri = substr($uri, 0, strpos($uri, '?'));
-        }
-
+    /**
+     * Parse the context prefix variables to determine in which path
+     * context the request has been performed.
+     *
+     * @param Request $request
+     */
+    private static function parseContextPrefix(Request &$request)
+    {
         // Since apache 2.3.13 we have now an additional index which provides the context
         if (isset($_SERVER['CONTEXT_PREFIX']) && $_SERVER['CONTEXT_PREFIX'] != '') {
-            $req->contextPrefix = $_SERVER['CONTEXT_PREFIX'] . '/';
+            $request->contextPrefix = $_SERVER['CONTEXT_PREFIX'] . '/';
         } elseif (isset($_SERVER['REDIRECT_BASE'])) {
             // Try to determine the context from redirect base
-            $req->contextPrefix = $_SERVER['REDIRECT_BASE'];
+            $request->contextPrefix = $_SERVER['REDIRECT_BASE'];
         } elseif (isset($_SERVER['SCRIPT_FILENAME'])) {
             // Fallback - get context out of script path
             if (isset($_SERVER['HTTP_HOST'])) {
                 $scriptName = preg_replace('/^.+[\\\\\\/]/', '', $_SERVER['SCRIPT_FILENAME']);
-                $req->contextPrefix = str_replace($scriptName, '', $_SERVER['SCRIPT_NAME']);
+                $request->contextPrefix = str_replace($scriptName, '', $_SERVER['SCRIPT_NAME']);
             }
         }
+    }
 
+    /**
+     * Parse the prepared uri into its parts
+     *
+     * @param Request $request The unprepared request object
+     * @param string $uri The prepared uri
+     * @param string $defaultController The name of default controller if nothing is requested
+     * @param string $defaultAction The name of default action if nothing is requested
+     *
+     * @return array Parsed parts for later usage
+     */
+    private static function parseUri(Request &$request, $uri, $defaultController, $defaultAction)
+    {
         // All beyond the context prefix is our application request uri
         $contextUri = $uri;
-        if (null != $req->contextPrefix) {
-            $contextUri = str_replace($req->contextPrefix, '', $uri);
+        if (null != $request->contextPrefix) {
+            $contextUri = str_replace($request->contextPrefix, '', $uri);
         }
 
         // Split parts
@@ -127,21 +136,50 @@ class Request
 
         // Check if there was a controller requested
         if (count($parts) > 0) {
-            $req->controller = ucfirst(trim($parts[0]));
+            $request->controller = ucfirst(trim($parts[0]));
             array_shift($parts);
-            if (! $req->controller) {
-                $req->controller = $defaultController;
+            if (! $request->controller) {
+                $request->controller = $defaultController;
             }
         }
 
         // Check if there was an action requested
         if (count($parts) > 0) {
-            $req->action = trim($parts[0]);
+            $request->action = trim($parts[0]);
             array_shift($parts);
-            if (! $req->action) {
-                $req->action = $defaultAction;
+            if (! $request->action) {
+                $request->action = $defaultAction;
             }
         }
+
+        return $parts;
+    }
+
+    /**
+     * Parse an uri into its request parts
+     *
+     * @param string $uri
+     *            The uri to parse
+     *
+     * @return \Nkey\Caribu\Mvc\Controller\Request The new created request
+     */
+    public static function parse($uri, $defaultController = 'Index', $defaultAction = 'index')
+    {
+        $req = new self($defaultController, $defaultAction);
+        $req->origin = $uri;
+
+        self::parseRemoteHost($req);
+
+        // Save the request parameters for later usage and rewrite the uri
+        $savedRequestParams = array();
+        if (strpos($uri, '?')) {
+            parse_str(substr($uri, strpos($uri, '?') + 1), $savedRequestParams);
+            $uri = substr($uri, 0, strpos($uri, '?'));
+        }
+
+        self::parseContextPrefix($req);
+
+        $parts = self::parseUri($req, $uri, $defaultController, $defaultAction);
 
         // Walk over all parameters and put them into container
         for ($i = 0; $i < count($parts); $i = $i + 2) {

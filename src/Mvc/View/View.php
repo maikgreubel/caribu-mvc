@@ -36,4 +36,34 @@ interface View
      * @return int
      */
     public function getOrder();
+
+    /**
+     * Combination check whether controller and action matches this view
+     *
+     * @param string $controller The name of controller
+     * @param string $action The name of action
+     *
+     * @return boolean true if both matches the view, false otherwise
+     */
+    public function matchBoth($controller, $action);
+
+    /**
+     * Checks whether the given controller matches this view
+     *
+     * @param string $controller
+     *            The name of controller to match the view for
+     *
+     * @return boolean true in case of view is responsible the controller, false otherwise
+     */
+    public function matchController($controller);
+
+    /**
+     * Checks whether the given action matches this view
+     *
+     * @param string $action
+     *            The name of action to match the view for
+     *
+     * @return boolean true in case of view is responsible the action, false otherwise
+     */
+    public function matchAction($action);
 }
