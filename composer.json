@@ -27,7 +27,10 @@
 		"theseer/phpdox" : "0.8.0"
 	},
 	"support" : {
-		"email" : "greubel@nkey.de"
+		"email" : "greubel@nkey.de",
+		"issues" : "https://github.com/maikgreubel/caribu-mvc/issues",
+		"wiki" : "https://github.com/maikgreubel/caribu-mvc/wiki",
+		"source" : "https://github.com/maikgreubel/caribu-mvc"
 	},
 	"authors" : [{
 			"name" : "Maik Greubel",
@@ -35,5 +38,6 @@
 			"homepage" : "https://www.nkey.de/",
 			"role" : "Maintainer"
 		}
-	]
+	],
+	"homepage" : "https://github.com/maikgreubel/caribu-mvc"
 }
