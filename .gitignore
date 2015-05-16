@@ -6,5 +6,4 @@ vendor
 composer.lock
 cache.properties
 .buildpath
-/contrib/
 /tests/application.log
