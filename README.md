@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/maikgreubel/caribu-mvc.png)](https://travis-ci.org/maikgreubel/caribu-mvc)
+
 # caribu-mvc
 Tiny annotation based MVC framework
 
