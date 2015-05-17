@@ -1,7 +1,9 @@
 
 [![Build Status](https://travis-ci.org/maikgreubel/caribu-mvc.png)](https://travis-ci.org/maikgreubel/caribu-mvc)
+[![Coverage Status](https://coveralls.io/repos/maikgreubel/caribu-mvc/badge.svg)](https://coveralls.io/r/maikgreubel/caribu-mvc)
 
 # caribu-mvc
+
 Tiny annotation based MVC framework
 
 For now only a simple example, what you can do with Caribu MVC.
