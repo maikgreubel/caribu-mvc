@@ -46,6 +46,13 @@ abstract class AbstractView implements View
     private $actions = array();
 
     /**
+     * List of view controls
+     *
+     * @var array
+     */
+    private $controls = array();
+
+    /**
      * Retrieve the settings from view
      *
      * @return \Nkey\Caribu\Mvc\View\View
@@ -116,5 +123,33 @@ abstract class AbstractView implements View
     final public function getViewSimpleName()
     {
         return $this->viewName;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::registerControl()
+     */
+    final public function registerControl($controlClass, $controlIdentifier)
+    {
+        $this->controls[$controlIdentifier] = $controlClass;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::createControl()
+     */
+    final public function createControl($controlIdentifier)
+    {
+        $rf = new \ReflectionClass($this->controls[$controlIdentifier]);
+        return $rf->newInstance();
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::hasControl()
+     */
+    final public function hasControl($controlIdentifier)
+    {
+       return isset($this->controls[$controlIdentifier]);
     }
 }

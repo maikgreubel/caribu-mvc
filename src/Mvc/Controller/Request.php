@@ -156,6 +156,32 @@ class Request
     }
 
     /**
+     * Parse the super globals for request parameters
+     *
+     * @param Request $request Request object to put the parameters in
+     */
+    private static function parseGetPostSessionCookie(Request &$request)
+    {
+        foreach($_GET as $name => $value) {
+            $request->params[$name] = $value;
+        }
+        foreach($_POST as $name => $value) {
+            $request->params[$name] = $value;
+        }
+        foreach($_COOKIE as $name => $value) {
+            $request->params[$name] = $value;
+        }
+        foreach($_FILES as $name => $value) {
+            $request->params[$name] = $value;
+        }
+        if (isset($_SESSION)) {
+            foreach($_SESSION as $name => $value) {
+                $request->params[$name] = $value;
+            }
+        }
+    }
+
+    /**
      * Parse an uri into its request parts
      *
      * @param string $uri
@@ -169,6 +195,8 @@ class Request
         $req->origin = $uri;
 
         self::parseRemoteHost($req);
+
+        self::parseGetPostSessionCookie($req);
 
         // Save the request parameters for later usage and rewrite the uri
         $savedRequestParams = array();
@@ -274,5 +302,32 @@ class Request
     public function getRemoteHost()
     {
         return $this->remoteHost;
+    }
+
+    /**
+     * Get value of particular parameter
+     *
+     * @param string $name The name of parameters
+     * @param string $typeOf The type expected parameter value
+     * @return mixed Depending on $typeOf the value as requested type and escaped
+     */
+    public function getParam($name, $typeOf = 'string')
+    {
+        $result = isset($this->params[$name]) ? $this->params[$name] : null;
+
+        switch($typeOf) {
+
+            case 'bool':
+            case 'boolean':
+                $result = function_exists('boolval') ? boolval($result) : (bool)$result;
+                break;
+
+            case 'string':
+            default:
+                $result = htmlentities(strval($result));
+                break;
+        }
+
+        return $result;
     }
 }

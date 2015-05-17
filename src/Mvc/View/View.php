@@ -66,4 +66,31 @@ interface View
      * @return boolean true in case of view is responsible the action, false otherwise
      */
     public function matchAction($action);
+
+    /**
+     * Register a control
+     *
+     * @param string $controlClass The class of control to register
+     * @param string $controlIdentifier The identifier of control
+     */
+    public function registerControl($controlClass, $controlIdentifier);
+
+    /**
+     * Create a new control by a given control identifier
+     *
+     * @param string $controlIdentifier The identifier of control
+     * @param array $parameters The parameter for control creation
+     *
+     * @return \Nkey\Caribu\Mvc\View\Control
+     */
+    public function createControl($controlIdentifier);
+
+    /**
+     * Checks whether a control exists
+     *
+     * @param string $controlIdentifier
+     *
+     * @return boolean true in case of identifier is registered, false otherwise
+     */
+    public function hasControl($controlIdentifier);
 }

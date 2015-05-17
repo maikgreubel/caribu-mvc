@@ -57,6 +57,13 @@ final class Application implements LoggerAwareInterface
     private $views = null;
 
     /**
+     * List of view controls
+     *
+     * @var array
+     */
+    private $viewControls = null;
+
+    /**
      * The default controller
      *
      * @var string
@@ -107,6 +114,7 @@ final class Application implements LoggerAwareInterface
     {
         $this->controllers = array();
         $this->views = array();
+        $this->viewControls = array();
         $this->setDefaults();
         $this->init();
         $this->setLogger(new NullLogger());
@@ -186,6 +194,20 @@ final class Application implements LoggerAwareInterface
         $settings = $v->getViewSettings();
         $this->views[$applicationName][$viewOrder][$settings->getViewSimpleName()] = $settings;
 
+        return $this;
+    }
+
+    /**
+     * Register a view control
+     *
+     * @param string $controlIdentifier The identifier under which the control will be registered
+     * @param string $controlClass The class of control
+     *
+     * @return Application Current application instance
+     */
+    public function registerViewControl($controlIdentifier, $controlClass)
+    {
+        $this->viewControls[$controlIdentifier] = $controlClass;
         return $this;
     }
 
@@ -318,7 +340,13 @@ final class Application implements LoggerAwareInterface
             'action' => $action
         ));
 
-        $response = $controllerInstance->call($action, $request, $this->getViewBestMatch($request, $applicationName));
+        $view = $this->getViewBestMatch($request, $applicationName);
+
+        foreach($this->viewControls as $controlIdentifier => $controlClass) {
+            $view->registerControl($controlClass, $controlIdentifier);
+        }
+
+        $response = $controllerInstance->call($action, $request, $view);
 
         $responseCode = $response->getHttpCode();
         $responseLen = strlen($response);
@@ -345,5 +373,17 @@ final class Application implements LoggerAwareInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Enable session handling
+     *
+     * @return Application The current application instance
+     */
+    public function enableSession()
+    {
+        session_start();
+
+        return $this;
     }
 }

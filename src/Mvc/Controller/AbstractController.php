@@ -186,6 +186,7 @@ abstract class AbstractController
         $this->response->appendBody(ob_get_clean());
 
         $view->render($this->response, $request, $this->viewParams);
+        $this->addControls($this->response, $request, $view);
 
         return $this->response;
     }
@@ -208,5 +209,36 @@ abstract class AbstractController
     final public function getControllerNamespace()
     {
         return $this->nameSpace;
+    }
+
+    /**
+     * Add the controls injected into view parameters
+     *
+     * @param Response $response The response rendered with controls
+     * @param Request $request The request
+     * @param View $view The View instance to use for rendering
+     */
+    protected function addControls(Response &$response, Request $request, View $view)
+    {
+        $matches = array();
+
+        while(preg_match("/\{(\w+)=(\w+)\}/", $response->getBody(), $matches)) {
+            $controlIdentifier = $matches[1];
+            $controlName = $matches[2];
+            $currentBody = $response->getBody();
+
+            if(!isset($this->viewParams[$controlIdentifier][$controlName]) ||
+                !$view->hasControl($controlIdentifier)) {
+                $response->setBody(str_replace($matches[0], '', $currentBody));
+                continue;
+            }
+
+            $control = $view->createControl($controlIdentifier);
+            $response->setBody(str_replace(
+                $matches[0],
+                $control->render($request, $this->viewParams[$controlIdentifier][$controlName]),
+                $currentBody
+            ));
+        }
     }
 }

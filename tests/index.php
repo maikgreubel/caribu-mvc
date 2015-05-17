@@ -39,11 +39,48 @@ class SimpleController extends AbstractController
             printf("%s => %s\n", $param, $value);
         }
     }
+
+    public function formTest(Request $request)
+    {
+        if($request->getParam("loggedin", 'boolean')) {
+            printf('<a href="%ssimple/logout">logout</a>', $request->getContextPrefix());
+        } else {
+            $this->viewParams['form']['login'] = array(
+                "controller" => "simple",
+                "action" => "login",
+                "fields" => array(
+                    array("name" => "username"),
+                    array("name" => "password", "type" => "password")
+                ),
+                "buttons" => array(
+                    array("name" => "Login")
+                )
+            );
+
+            echo "{form=login}";
+        }
+    }
+
+    public function login(Request $request)
+    {
+        if($request->getParam("username") == "test" && $request->getParam("password") == "tset") {
+            $_SESSION['loggedin'] = true;
+        }
+        $this->response->addHeader('Location', sprintf('%ssimple/formTest', $request->getContextPrefix()));
+    }
+
+    public function logout(Request $request)
+    {
+        unset($_SESSION["loggedin"]);
+        $this->response->addHeader('Location', sprintf('%ssimple/formTest', $request->getContextPrefix()));
+    }
 }
 
 // Preparing
 Application::getInstance()->registerController('SimpleController')
     ->setDefaults('Simple')
+    ->registerViewControl('form', '\Nkey\Caribu\Mvc\View\Controls\Form')
+    ->enableSession()
     ->setLogger(new ExtendedLogger());
 
 // Serving
