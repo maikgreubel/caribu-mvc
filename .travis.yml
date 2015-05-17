@@ -5,7 +5,14 @@ php:
   - 5.6
   - hhvm
 
-install:
-    composer install
+before_script:
+  - wget http://getcomposer.org/composer.phar
+  - php composer.phar install --dev --no-interaction
+  - mysql -e 'create database caribu_test'
 
-script: phpunit
+script:
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml
+
+after_script:
+   - php vendor/bin/coveralls -v
