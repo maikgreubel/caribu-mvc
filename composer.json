@@ -4,28 +4,33 @@
 	],
 	"autoload" : {
 		"psr-4" : {
-			"Nkey\\Caribu\\Mvc\\" : "src/Mvc",
-			"Nkey\\Caribu\\Mvc\\Tests\\" : "tests"
+			"Nkey\\Caribu\\Mvc\\" : "src/Mvc"
 		}
+	},
+	"autoload-dev" : {
+	    "psr-4" : {
+	        "Nkey\\Caribu\\Mvc\\Tests\\" : "tests/feature-test"
+	    }
 	},
 	"name" : "nkey/caribu-mvc",
 	"type" : "library",
-	"description" : "Tiny MVC Pattern framework",
+	"description" : "Tiny (M)VC Pattern framework",
 	"license" : "BSD-2-Clause",
 	"require" : {
 		"php" : ">=5.4",
 		"psr/log" : "1.0.0",
-		"nkey/phpgenerics" : "dev-master"
+		"nkey/phpgenerics" : "1.1.*@dev"
 	},
 	"require-dev" : {
-		"phpunit/phpunit" : "4.6.6",
-		"squizlabs/php_codesniffer" : "2.3.2",
-		"phploc/phploc" : "2.1.1",
-		"pdepend/pdepend" : "2.0.6",
-		"phpmd/phpmd" : "2.2.2",
-		"sebastian/phpcpd" : "2.0.2",
-		"theseer/phpdox" : "0.8.0",
-		"satooshi/php-coveralls": "dev-master"
+        "phpunit/phpunit" : "4.6.6",
+        "phpunit/dbunit" : "1.3.2",
+        "squizlabs/php_codesniffer" : "2.3.2",
+        "phploc/phploc" : "2.1.1",
+        "pdepend/pdepend" : "2.0.6",
+        "phpmd/phpmd" : "2.2.2",
+        "sebastian/phpcpd" : "2.0.2",
+        "theseer/phpdox" : "0.8.0",
+		"satooshi/php-coveralls" : "dev-master"
 	},
 	"support" : {
 		"email" : "greubel@nkey.de",
@@ -40,5 +45,10 @@
 			"role" : "Maintainer"
 		}
 	],
-	"homepage" : "https://github.com/maikgreubel/caribu-mvc"
+	"homepage" : "https://github.com/maikgreubel/caribu-mvc",
+	"extra" : {
+        "branch-alias" : {
+            "dev-master" : "1.0-dev"
+        }
+    }
 }
