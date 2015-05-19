@@ -26,6 +26,7 @@ use \Psr\Log\NullLogger;
  * calling the Application::serve() function
  *
  * @author Maik Greubel <greubel@nkey.de>
+ *
  *         This file is part of Caribu MVC package
  */
 final class Application implements LoggerAwareInterface

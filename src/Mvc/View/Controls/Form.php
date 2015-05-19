@@ -4,6 +4,13 @@ namespace Nkey\Caribu\Mvc\View\Controls;
 use Nkey\Caribu\Mvc\View\Control;
 use Nkey\Caribu\Mvc\Controller\Request;
 
+/**
+ * A very basic form control
+ *
+ * @author Maik Greubel <greubel@nkey.de>
+ *
+ *         This file is part of Caribu MVC package
+ */
 class Form implements Control
 {
 
@@ -12,7 +19,7 @@ class Form implements Control
      *
      * @see \Nkey\Caribu\Mvc\View\Control::render()
      */
-    public function render(Request $request, array $parameters = array())
+    public function render(Request $request, $parameters = array())
     {
         $formAction = sprintf(
             "%s%s/%s",
@@ -24,12 +31,14 @@ class Form implements Control
         if (isset($parameters['formAction'])) {
             $formAction = $parameters['formAction'];
         }
+
         $rendered = sprintf(
             '<form action="%s" method="%s"%s>',
             $formAction,
             isset($parameters['formMethod']) ? $parameters['formMethod'] : "POST",
             isset($parameters['formClass']) ? (sprintf(' class="%s"', $parameters['formClass'])) : ""
         );
+
         foreach($parameters['fields'] as $field) {
             if(!isset($field['name'])) {
                 throw new ControlException("Field must have at least a name!");
@@ -46,6 +55,7 @@ class Form implements Control
                 $field['name']
             );
         }
+
         foreach($parameters['buttons'] as $button) {
             if(!isset($button['name'])) {
                 throw new ControlException("Button must have at least a name!");
@@ -53,15 +63,18 @@ class Form implements Control
             $buttonType = isset($button['type']) ? $button['type'] : "submit";
             $id = isset($button['id']) ? $button['id'] : $button['name'];
             $class = isset($button['class']) ? $button['class'] : $button['name'];
+            $label = isset($button['label']) ? $button['label'] : $button['name'];
 
             $rendered .= sprintf(
-                '<input type="%s" id="%s" class="%s" name="%s"/>',
+                '<button type="%s" id="%s" class="%s" name="%s">%s</button>',
                 $buttonType,
                 $id,
                 $class,
-                $button['name']
+                $button['name'],
+                $label
             );
         }
+
         $rendered .= sprintf("</form>");
 
         return $rendered;
