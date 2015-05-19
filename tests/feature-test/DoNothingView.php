@@ -15,12 +15,22 @@ use Nkey\Caribu\Mvc\Controller\Response;
  */
 class DoNothingView extends AbstractView
 {
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Nkey\Caribu\Mvc\View\AbstractView::getOrder()
+     */
     public function getOrder()
     {
         return 10;
     }
 
-    public function render(Response &$response, Request $request, array $parameters = array())
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Nkey\Caribu\Mvc\View\AbstractView::render()
+     */
+    public function render(Response &$response, Request $request, $parameters = array())
     {
     }
 }

@@ -21,9 +21,11 @@ use \Nkey\Caribu\Mvc\View\AbstractView;
  */
 class DefaultView extends AbstractView
 {
+
     /**
      * (non-PHPdoc)
-     * @see \Nkey\Caribu\Mvc\View\View::getOrder()
+     *
+     * @see \Nkey\Caribu\Mvc\View\AbstractView::getOrder()
      */
     public function getOrder()
     {
@@ -33,9 +35,9 @@ class DefaultView extends AbstractView
     /**
      * (non-PHPdoc)
      *
-     * @see \Nkey\Caribu\Mvc\View\View::render()
+     * @see \Nkey\Caribu\Mvc\View\AbstractView::render()
      */
-    public function render(Response &$response, Request $request, array $parameters = array())
+    public function render(Response &$response, Request $request, $parameters = array())
     {
         if ($response->getType() == 'text/html') {
             $html = sprintf("

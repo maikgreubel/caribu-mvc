@@ -53,6 +53,20 @@ abstract class AbstractView implements View
     private $controls = array();
 
     /**
+     * (non-PHPdoc)
+     *
+     * @see \Nkey\Caribu\Mvc\View\View::getOrder()
+     */
+    abstract public function getOrder();
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Nkey\Caribu\Mvc\View\View::render()
+     */
+    abstract public function render(Response &$response, Request $request, $parameters = array());
+
+    /**
      * Retrieve the settings from view
      *
      * @return \Nkey\Caribu\Mvc\View\View

@@ -28,7 +28,7 @@ interface View
      *
      * @return void
      */
-    public function render(Response &$response, Request $request, array $parameters = array());
+    public function render(Response &$response, Request $request, $parameters = array());
 
     /**
      * Retrieve the order of view in best-match list
