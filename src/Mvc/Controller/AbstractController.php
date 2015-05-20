@@ -2,6 +2,7 @@
 namespace Nkey\Caribu\Mvc\Controller;
 
 use \Nkey\Caribu\Mvc\View\View;
+use Nkey\Caribu\Mvc\View\Control;
 
 /**
  * Basic controller functionality
@@ -233,10 +234,17 @@ abstract class AbstractController
                 continue;
             }
 
-            $control = $view->createControl($controlIdentifier);
+
+            $repl = "";
+            if($this->viewParams[$controlIdentifier][$controlName] instanceof Control) {
+                $repl = $this->viewParams[$controlIdentifier][$controlName]->render($request);
+            } else {
+                $control = $view->createControl($controlIdentifier);
+                $repl = $control->render($request, $this->viewParams[$controlIdentifier][$controlName]);
+            }
             $response->setBody(str_replace(
                 $matches[0],
-                $control->render($request, $this->viewParams[$controlIdentifier][$controlName]),
+                $repl,
                 $currentBody
             ));
         }
