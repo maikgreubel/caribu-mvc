@@ -18,7 +18,7 @@ class FeatureTestController extends AbstractController
      */
     public function index()
     {
-        echo "Test succeeded";
+        echo $this->nonWebMethod();
     }
 
     /**
@@ -31,5 +31,15 @@ class FeatureTestController extends AbstractController
        foreach($request->getParams() as $param => $value) {
            printf("%s = %s\n", $param, $value);
        }
+    }
+
+    public function nonWebMethod()
+    {
+        return $this->anotherNonWeb("Test succeeded");
+    }
+
+    public function anotherNonWeb($withString)
+    {
+        return $withString;
     }
 }

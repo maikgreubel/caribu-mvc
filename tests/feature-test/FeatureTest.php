@@ -56,6 +56,19 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('HTTP/1.1 404 Not Found', $response->getHttpCode());
     }
 
+    public function testNonWebMethod()
+    {
+        $request = Request::parse("/featureTest/nonWebMethod");
+
+        $response = Application::getInstance()->serve('default', $request, false);
+
+        $this->assertEquals(404, $response->getCode());
+        $this->assertEquals('text/html', $response->getType());
+        $this->assertContains('<h2>HTTP 404</h2>', $response->getBody());
+        $this->assertEquals('Error', $response->getTitle());
+        $this->assertEquals('HTTP/1.1 404 Not Found', $response->getHttpCode());
+    }
+
     public function testDefaults()
     {
         $request = Request::parse("/");

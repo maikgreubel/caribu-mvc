@@ -22,13 +22,6 @@ abstract class AbstractController
 {
 
     /**
-     * Namespace of controller class
-     *
-     * @var string
-     */
-    private $nameSpace = '';
-
-    /**
      * Class of controller
      *
      * @var string
@@ -151,9 +144,6 @@ abstract class AbstractController
      */
     final public function hasAction($action)
     {
-        if (count($this->actions) === 0) {
-            return false;
-        }
         return array_search($action, $this->actions) !== false;
     }
 
@@ -200,16 +190,6 @@ abstract class AbstractController
     final public function getControllerSimpleName()
     {
         return $this->controllerName;
-    }
-
-    /**
-     * Retrieve the namespace of controller
-     *
-     * @return string The controller namespace
-     */
-    final public function getControllerNamespace()
-    {
-        return $this->nameSpace;
     }
 
     /**

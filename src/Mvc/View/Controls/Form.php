@@ -8,7 +8,6 @@ use Nkey\Caribu\Mvc\Controller\Request;
  * A very basic form control
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
  *         This file is part of Caribu MVC package
  */
 class Form implements Control
@@ -21,9 +20,14 @@ class Form implements Control
      */
     public function render(Request $request, $parameters = array())
     {
+        $contentPrefix = "/";
+        if (!is_null($request->getContextPrefix())) {
+            $contentPrefix = $request->getContextPrefix();
+        }
+
         $formAction = sprintf(
             "%s%s/%s",
-            !is_null($request->getContextPrefix() && !empty($request->getContextPrefix())) ? $request->getContextPrefix() : "",
+            $contentPrefix,
             isset($parameters['controller']) ? $parameters['controller'] : lcfirst($request->getController()),
             isset($parameters['action']) ? $parameters['action'] : lcfirst($request->getAction())
         );
