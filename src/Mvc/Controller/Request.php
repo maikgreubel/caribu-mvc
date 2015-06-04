@@ -121,7 +121,7 @@ class Request
     {
         // All beyond the context prefix is our application request uri
         $contextUri = $uri;
-        if (null != $request->contextPrefix) {
+        if (null != $request->contextPrefix && '/' != $request->contextPrefix) {
             $contextUri = str_replace($request->contextPrefix, '', $uri);
         }
 

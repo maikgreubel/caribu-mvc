@@ -323,7 +323,17 @@ final class Application implements LoggerAwareInterface
         $controller = $request->getController();
         $action = $request->getAction();
 
+        $this->getLogger()->debug("[{remote}] Requested controller is {controller} and action is {action}", array(
+            'remote' => $request->getRemoteHost(),
+            'controller' => $controller,
+            'action' => $action
+        ));
+
         if (! isset($this->controllers[$applicationName][$controller])) {
+            $this->getLogger()->error("[{remote}] No such controller {controller}", array(
+                'remote' => $request->getRemoteHost(),
+                'controller' => $controller
+            ));
             $controller = 'Error';
             $action = 'error';
         }
@@ -331,6 +341,10 @@ final class Application implements LoggerAwareInterface
         $controllerInstance = $this->controllers[$applicationName][$controller];
         assert($controllerInstance instanceof AbstractController);
         if (! $controllerInstance->hasAction($action)) {
+            $this->getLogger()->error("[{remote}] No such action {action}", array(
+                'remote' => $request->getRemoteHost(),
+                'action' => $action
+            ));
             $controllerInstance = $this->controllers[$applicationName]['Error'];
             $action = 'error';
         }
