@@ -3,6 +3,7 @@ namespace Nkey\Caribu\Mvc\Controller;
 
 use \Nkey\Caribu\Mvc\View\View;
 use Nkey\Caribu\Mvc\View\Control;
+use Nkey\Caribu\Mvc\Application;
 
 /**
  * Basic controller functionality
@@ -228,5 +229,23 @@ abstract class AbstractController
                 $currentBody
             ));
         }
+    }
+
+    /**
+     * Redirects the current request to another site
+     * @param string $controller The name of Controller to
+     * @param string $action
+     */
+    protected function redirect($controller = null, $action = null)
+    {
+        if (null == $controller) {
+            $controller = Application::getInstance()->getDefaultController();
+        }
+        if (null == $action) {
+            $action = Application::getInstance()->getDefaultAction();
+        }
+        $destination = sprintf("Location: %s%s/%s", $this->request->getContextPrefix(), $controller, $action);
+        header($destination);
+        exit();
     }
 }

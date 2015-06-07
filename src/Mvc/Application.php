@@ -401,4 +401,24 @@ final class Application implements LoggerAwareInterface
 
         return $this;
     }
+
+    /**
+     * Retrieve the default controller name
+     *
+     * @return string The name of default controller
+     */
+    public function getDefaultController()
+    {
+        return $this->defaultController;
+    }
+
+    /**
+     * Retrieve the default action name
+     *
+     * @return string The name of default action
+     */
+    public function getDefaultAction()
+    {
+        return $this->defaultAction;
+    }
 }
