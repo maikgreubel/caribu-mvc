@@ -86,6 +86,13 @@ final class Application implements LoggerAwareInterface
     private static $instance = null;
 
     /**
+     * Default headers to send to client
+     *
+     * @var array
+     */
+    private $defaultHeaders = array();
+
+    /**
      * Get application instance
      *
      * @return \Nkey\Caribu\Mvc\Application
@@ -380,6 +387,9 @@ final class Application implements LoggerAwareInterface
             header(sprintf("Content-Length: %d", $responseLen));
             header(sprintf("Content-Type: %s", $responseType));
 
+            foreach ($this->defaultHeaders as $headerName => $headerValue) {
+                header(sprintf("%s: %s", $headerName, $headerValue));
+            }
             foreach ($response->getAdditionalHeaders() as $headerName => $headerValue) {
                 header(sprintf("%s: %s", $headerName, $headerValue));
             }
@@ -420,5 +430,18 @@ final class Application implements LoggerAwareInterface
     public function getDefaultAction()
     {
         return $this->defaultAction;
+    }
+
+    /**
+     * Add a new header to specific value.
+     *
+     * Existing header will be overriden.
+     *
+     * @param string $name The header identifier
+     * @param string $value The value to set
+     */
+    public function addHeader($name, $value)
+    {
+        $this->defaultHeaders[$name] = $value;
     }
 }
