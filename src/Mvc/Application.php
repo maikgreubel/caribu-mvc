@@ -439,9 +439,12 @@ final class Application implements LoggerAwareInterface
      *
      * @param string $name The header identifier
      * @param string $value The value to set
+     *
+     * @return Application The current application instance
      */
     public function addHeader($name, $value)
     {
         $this->defaultHeaders[$name] = $value;
+        return $this;
     }
 }

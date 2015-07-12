@@ -220,6 +220,19 @@ class Request
 
         $req->params = array_merge($req->params, $savedRequestParams);
 
+        // Read the options from http headers
+        if (php_sapi_name() != 'cli') {
+            $req->params['Accept'] = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
+            $req->params['Accept-Language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
+            $req->params['Accept-Encoding'] = isset($_SERVER['HTTP_ACCEPT_ENCODING']) ? $_SERVER['HTTP_ACCEPT_ENCODING'] : null;
+            $req->params['User-Agent-CPU'] = isset($_SERVER['HTTP_UA_CPU']) ? $_SERVER['HTTP_UA_CPU'] : null;
+            $req->params['User-Agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+            $req->params['Host'] = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+            $req->params['Cache-Control'] = isset($_SERVER['HTTP_CACHE_COTROL']) ? $_SERVER['HTTP_CACHE_COTROL'] : null;
+            $req->params['Connection'] = isset($_SERVER['HTTP_CONNECTION']) ? $_SERVER['HTTP_CONNECTION'] : null;
+            $req->params['X-Forwarded-For'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : null;
+        }
+
         // Et'voila
         return $req;
     }
