@@ -322,6 +322,17 @@ class Request
     }
 
     /**
+     * Check whether a given parameter exists
+     *
+     * @param string $name The name of the parameter
+     * @return boolean true in case of it exists, false otherwise
+     */
+    public function hasParam($name)
+    {
+        return isset($this->params[$name]);
+    }
+
+    /**
      * Get value of particular parameter
      *
      * @param string $name The name of parameters
@@ -330,7 +341,7 @@ class Request
      */
     public function getParam($name, $typeOf = 'string')
     {
-        $result = isset($this->params[$name]) ? $this->params[$name] : null;
+        $result = $this->hasParam($name) ? $this->params[$name] : null;
 
         switch($typeOf) {
 
