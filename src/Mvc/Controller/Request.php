@@ -231,6 +231,10 @@ class Request
             $req->params['Cache-Control'] = isset($_SERVER['HTTP_CACHE_COTROL']) ? $_SERVER['HTTP_CACHE_COTROL'] : null;
             $req->params['Connection'] = isset($_SERVER['HTTP_CONNECTION']) ? $_SERVER['HTTP_CONNECTION'] : null;
             $req->params['X-Forwarded-For'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : null;
+
+            if (null !== $req->params['Accept-Language']) {
+                list($req->params['Accept-Language-Best']) = explode(',', $req->params['Accept-Language']);
+            }
         }
 
         // Et'voila
