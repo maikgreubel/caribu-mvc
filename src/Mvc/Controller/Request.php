@@ -236,8 +236,9 @@ class Request
                 $accepted = explode(',',$req->params['Accept-Language']);
                 $req->params['Accept-Language-Best'] = $accepted[0];
                 foreach ($accepted as $acceptedLang) {
-                    if (preg_match("/^(?i)[a-z]{2}[-_](?:[a-z]{2}){1,2}(?:_[a-z]{2})?$/", $acceptedLang)) {
-                        $req->params['Accept-Language-Best'] = $acceptedLang;
+                    $matches = array();
+                    if (preg_match("/^((?i)[a-z]{2}[-_](?:[a-z]{2}){1,2}(?:_[a-z]{2})?).*/", $acceptedLang, $matches)) {
+                        $req->params['Accept-Language-Best'] = $matches[1];
                         break;
                     }
                 }
