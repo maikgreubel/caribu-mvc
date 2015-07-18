@@ -233,7 +233,14 @@ class Request
             $req->params['X-Forwarded-For'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : null;
 
             if (null !== $req->params['Accept-Language']) {
-                list($req->params['Accept-Language-Best']) = explode(',', $req->params['Accept-Language']);
+                $accepted = explode(',',$req->params['Accept-Language']);
+                $req->params['Accept-Language-Best'] = $accepted[0];
+                foreach ($accepted as $acceptedLang) {
+                    if (preg_match("/^(?i)[a-z]{2}_(?:[a-z]{2}){1,2}(?:_[a-z]{2})?$/", $acceptedLang)) {
+                        $req->params['Accept-Language-Best'] = $acceptedLang;
+                        break;
+                    }
+                }
             }
         }
 
