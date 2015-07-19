@@ -51,7 +51,7 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(404, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
-        $this->assertContains('<h2>HTTP 404</h2>', $response->getBody());
+        $this->assertContains('<h2>Not Found</h2>', $response->getBody());
         $this->assertEquals('Error', $response->getTitle());
         $this->assertEquals('HTTP/1.1 404 Not Found', $response->getHttpCode());
     }
@@ -64,7 +64,7 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(404, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
-        $this->assertContains('<h2>HTTP 404</h2>', $response->getBody());
+        $this->assertContains('<h2>Not Found</h2>', $response->getBody());
         $this->assertEquals('Error', $response->getTitle());
         $this->assertEquals('HTTP/1.1 404 Not Found', $response->getHttpCode());
     }
