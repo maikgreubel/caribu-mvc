@@ -386,6 +386,8 @@ final class Application implements LoggerAwareInterface
         ));
 
         $view = $this->getViewBestMatch($request, $applicationName);
+        $view->setCssFiles($this->cssFiles);
+        $view->setJsFiles($this->jsFiles);
 
         foreach($this->viewControls as $controlIdentifier => $controlClass) {
             $view->registerControl($controlClass, $controlIdentifier);
