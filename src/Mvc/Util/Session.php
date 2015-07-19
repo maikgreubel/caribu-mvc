@@ -16,14 +16,14 @@ class Session implements \IteratorAggregate
      *
      * @var array
      */
-    private $sessionData;
+    private $sessionData = array();
 
     /**
      * The session namespace
      *
      * @var string
      */
-    private $namespace;
+    private $namespace = null;
 
     /**
      * The session identifier
@@ -46,6 +46,9 @@ class Session implements \IteratorAggregate
             $this->sessionData = $_SESSION;
         }
         else {
+            if (!isset($_SESSION[$namespace])) {
+                $_SESSION[$namespace] = array();
+            }
             $this->sessionData = $_SESSION[$namespace];
         }
     }
@@ -59,6 +62,7 @@ class Session implements \IteratorAggregate
     public function set($key, $value)
     {
         $this->sessionData[$key] = $value;
+        $this->update();
     }
 
     /**
@@ -71,9 +75,9 @@ class Session implements \IteratorAggregate
     }
 
     /**
-     * Destructor
+     * Update internal session data
      */
-    public function __destruct()
+    private function update()
     {
         if (null != $this->namespace) {
             $_SESSION[$this->namespace] = $this->sessionData;
