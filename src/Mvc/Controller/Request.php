@@ -98,7 +98,7 @@ class Request
         } elseif (isset($_SERVER['REDIRECT_BASE'])) {
             // Try to determine the context from redirect base
             $request->contextPrefix = $_SERVER['REDIRECT_BASE'];
-        } elseif (isset($_SERVER['SCRIPT_FILENAME'])) {
+        } elseif (isset($_SERVER['SCRIPT_FILENAME']) && isset($_SERVER['SCRIPT_NAME'])) {
             // Fallback - get context out of script path
             if (isset($_SERVER['HTTP_HOST'])) {
                 $scriptName = preg_replace('/^.+[\\\\\\/]/', '', $_SERVER['SCRIPT_FILENAME']);
@@ -221,26 +221,43 @@ class Request
         $req->params = array_merge($req->params, $savedRequestParams);
 
         // Read the options from http headers
-        if (php_sapi_name() != 'cli') {
-            $req->params['Accept'] = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
-            $req->params['Accept-Language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
-            $req->params['Accept-Encoding'] = isset($_SERVER['HTTP_ACCEPT_ENCODING']) ? $_SERVER['HTTP_ACCEPT_ENCODING'] : null;
-            $req->params['User-Agent-CPU'] = isset($_SERVER['HTTP_UA_CPU']) ? $_SERVER['HTTP_UA_CPU'] : null;
-            $req->params['User-Agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
-            $req->params['Host'] = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
-            $req->params['Cache-Control'] = isset($_SERVER['HTTP_CACHE_COTROL']) ? $_SERVER['HTTP_CACHE_COTROL'] : null;
-            $req->params['Connection'] = isset($_SERVER['HTTP_CONNECTION']) ? $_SERVER['HTTP_CONNECTION'] : null;
-            $req->params['X-Forwarded-For'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : null;
+        if (isset($_SERVER['HTTP_ACCEPT'])) {
+            $req->params['Accept'] =  $_SERVER['HTTP_ACCEPT'];
+        }
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $req->params['Accept-Language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+            $req->params['Accept-Encoding'] = $_SERVER['HTTP_ACCEPT_ENCODING'];
+        }
+        if (isset($_SERVER['HTTP_UA_CPU'])) {
+            $req->params['User-Agent-CPU'] = $_SERVER['HTTP_UA_CPU'];
+        }
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+            $req->params['User-Agent'] = $_SERVER['HTTP_USER_AGENT'];
+        }
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $req->params['Host'] = $_SERVER['HTTP_HOST'];
+        }
+        if (isset($_SERVER['HTTP_CACHE_COTROL'])) {
+            $req->params['Cache-Control'] = $_SERVER['HTTP_CACHE_COTROL'];
+        }
+        if (isset($_SERVER['HTTP_CONNECTION'])) {
+            $req->params['Connection'] =  $_SERVER['HTTP_CONNECTION'];
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $req->params['X-Forwarded-For'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
 
-            if (null !== $req->params['Accept-Language']) {
-                $accepted = explode(',',$req->params['Accept-Language']);
-                $req->params['Accept-Language-Best'] = $accepted[0];
-                foreach ($accepted as $acceptedLang) {
-                    $matches = array();
-                    if (preg_match("/^((?i)[a-z]{2}[-_](?:[a-z]{2}){1,2}(?:_[a-z]{2})?).*/", $acceptedLang, $matches)) {
-                        $req->params['Accept-Language-Best'] = $matches[1];
-                        break;
-                    }
+        if (isset($req->params['Accept-Language'])) {
+            $accepted = explode(',',$req->params['Accept-Language']);
+            $req->params['Accept-Language-Best'] = $accepted[0];
+            foreach ($accepted as $acceptedLang) {
+                $matches = array();
+                // TODO: Respect the quality field from rfc2616
+                if (preg_match("/^((?i)[a-z]{2}[-_](?:[a-z]{2}){1,2}(?:_[a-z]{2})?).*/", $acceptedLang, $matches)) {
+                    $req->params['Accept-Language-Best'] = $matches[1];
+                    break;
                 }
             }
         }
@@ -365,5 +382,24 @@ class Request
         }
 
         return $result;
+    }
+
+    /**
+     * To override a given parameter
+     *
+     * @param string $name The parameter name to override
+     * @param string $value The value to override
+     *
+     * @return Request the current request as fluent interface
+     *
+     * @throws ControllerException in case of the parameter does not exist
+     */
+    public function setParam($name, $value)
+    {
+        if (!$this->hasParam($name)) {
+            throw new ControllerException("Parameter {param} does not exist", array('param' => $name));
+        }
+
+        $this->params[$name] = $value;
     }
 }

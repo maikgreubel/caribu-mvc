@@ -93,6 +93,12 @@ final class Application implements LoggerAwareInterface
     private $defaultHeaders = array();
 
     /**
+     * The client request headers to override
+     * @var array
+     */
+    private $overridenClientHeaders = array();
+
+    /**
      * Get application instance
      *
      * @return \Nkey\Caribu\Mvc\Application
@@ -327,6 +333,10 @@ final class Application implements LoggerAwareInterface
             $request = Request::parseFromServerRequest($this->defaultController, $this->defaultAction);
         }
 
+        foreach ($this->overridenClientHeaders as $headerName => $headerValue) {
+            $request->setParam($headerName, $headerValue);
+        }
+
         $controller = $request->getController();
         $action = $request->getAction();
 
@@ -445,6 +455,20 @@ final class Application implements LoggerAwareInterface
     public function addHeader($name, $value)
     {
         $this->defaultHeaders[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * Add a header to overide a client request header
+     *
+     * @param string $name The header name to override
+     * @param string $value The value to override
+     *
+     * @return Application The current application instance
+     */
+    public function addOverridenClientHeader($name, $value)
+    {
+        $this->overridenClientHeaders[$name] = $value;
         return $this;
     }
 }
