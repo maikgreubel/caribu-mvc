@@ -2,6 +2,7 @@
 namespace Nkey\Caribu\Mvc\Controller;
 
 use \Nkey\Caribu\Mvc\View\View;
+use Generics\Client\HttpStatus;
 
 /**
  * The error controller
@@ -25,8 +26,25 @@ class ErrorController extends AbstractController
      */
     public function error(Request $request)
     {
-        $this->response->setCode(404);
-        printf("<h2>HTTP 404</h2>");
+        $this->response->setCode(HttpStatus::STATUS_404);
+        printf("<h2>%s</h2>", HttpStatus::getStatus(HttpStatus::STATUS_404));
         printf("Requested document %s on %s could not be found!", $request->getAction(), $request->getController());
+    }
+
+    /**
+     * Error processing for exceptions
+     *
+     * @param \Exception $ex
+     */
+    public function exception(Request $request)
+    {
+        $ex = $request->getException();
+
+        $this->response->setCode(HttpStatus::STATUS_500);
+        printf("<h2>%s</h2>", HttpStatus::getStatus(HttpStatus::STATUS_500));
+        while ($ex != null) {
+            printf("<h3>%s</h3><pre>%s</pre>", $ex->getMessage(), $ex->getTraceAsString());
+            $ex = $ex->getPrevious();
+        }
     }
 }

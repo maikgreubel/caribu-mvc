@@ -56,6 +56,13 @@ class Request
     private $contextPrefix = null;
 
     /**
+     * An occured exception
+     *
+     * @var \Exception
+     */
+    private $exception;
+
+    /**
      * Create a new instance of request
      *
      * @param string $defaultController
@@ -401,5 +408,28 @@ class Request
         }
 
         $this->params[$name] = $value;
+    }
+
+    /**
+     * Set the exception occured
+     *
+     * @param Exception $ex
+     *
+     * @return Request the current request instance
+     */
+    public function setException(\Exception $ex)
+    {
+        $this->exception = $ex;
+        return $this;
+    }
+
+    /**
+     * Get the exception occured
+     *
+     * @return \Exception
+     */
+    public function getException()
+    {
+        return $this->exception;
     }
 }

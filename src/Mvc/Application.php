@@ -378,7 +378,17 @@ final class Application implements LoggerAwareInterface
             $view->registerControl($controlClass, $controlIdentifier);
         }
 
-        $response = $controllerInstance->call($action, $request, $view);
+        try
+        {
+            $response = $controllerInstance->call($action, $request, $view);
+        }
+        catch(\Exception $ex)
+        {
+            $controllerInstance = $this->controllers[$applicationName]['Error'];
+            $action = 'exception';
+            $request->setException($ex);
+            $response = $controllerInstance->call($action, $request, $view);
+        }
 
         $responseCode = $response->getHttpCode();
         $responseLen = strlen($response);
