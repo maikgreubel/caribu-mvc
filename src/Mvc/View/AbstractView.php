@@ -53,6 +53,18 @@ abstract class AbstractView implements View
     private $controls = array();
 
     /**
+     * List of additional css files
+     * @var array
+     */
+    private $cssFiles = array();
+
+    /**
+     * List of additional javascript files
+     * @var array
+     */
+    private $jsFiles = array();
+
+    /**
      * (non-PHPdoc)
      *
      * @see \Nkey\Caribu\Mvc\View\View::getOrder()
@@ -165,5 +177,45 @@ abstract class AbstractView implements View
     final public function hasControl($controlIdentifier)
     {
        return isset($this->controls[$controlIdentifier]);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::setCssFiles()
+     */
+    final public function setCssFiles(array $files)
+    {
+        $this->cssFiles = $files;
+        return $this;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Nkey\Caribu\Mvc\View\View::setJsFiles()
+     */
+    final public function setJsFiles(array $files)
+    {
+        $this->jsFiles = $files;
+        return $this;
+    }
+
+    /**
+     * Retrieve all js files
+     *
+     * @return array
+     */
+    final protected function getJsFiles()
+    {
+        return $this->jsFiles;
+    }
+
+    /**
+     * Retrieve all css files
+     *
+     * @return array
+     */
+    final protected function getCssFiles()
+    {
+        return $this->cssFiles;
     }
 }

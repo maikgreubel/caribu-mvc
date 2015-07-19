@@ -10,6 +10,7 @@ use \Nkey\Caribu\Mvc\View\View;
 use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerAwareTrait;
 use \Psr\Log\NullLogger;
+use PhpParser\Node\Expr\Instanceof_;
 
 /**
  * The MVC Application main class
@@ -97,6 +98,18 @@ final class Application implements LoggerAwareInterface
      * @var array
      */
     private $overridenClientHeaders = array();
+
+    /**
+     * Additional css files to include in view
+     * @var array
+     */
+    private $cssFiles;
+
+    /**
+     * Additional javascript files to include in view
+     * @var array
+     */
+    private $jsFiles;
 
     /**
      * Get application instance
@@ -479,6 +492,29 @@ final class Application implements LoggerAwareInterface
     public function addOverridenClientHeader($name, $value)
     {
         $this->overridenClientHeaders[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * Add an uri for an additional javascript file
+     *
+     * @param string $file
+     * @return Application the current application instance
+     */
+    public function addJsFile($file)
+    {
+        $this->jsFiles[] = $file;
+        return $this;
+    }
+
+    /**
+     * Add an uri for an additional css file
+     * @param string $file
+     * @return Application the current application instance
+     */
+    public function addCssFile($file)
+    {
+        $this->cssFiles[] = $file;
         return $this;
     }
 }

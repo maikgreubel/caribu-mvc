@@ -93,4 +93,19 @@ interface View
      * @return boolean true in case of identifier is registered, false otherwise
      */
     public function hasControl($controlIdentifier);
+
+    /**
+     * Add additional css files
+     *
+     * @param array $files
+     * @return View
+     */
+    public function setCssFiles(array $files);
+
+    /**
+     * Add additional css files
+     * @param array $files
+     * @return View
+     */
+    public function setJsFiles(array $files);
 }
