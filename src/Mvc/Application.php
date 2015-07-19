@@ -103,13 +103,13 @@ final class Application implements LoggerAwareInterface
      * Additional css files to include in view
      * @var array
      */
-    private $cssFiles;
+    private $cssFiles = array();
 
     /**
      * Additional javascript files to include in view
      * @var array
      */
-    private $jsFiles;
+    private $jsFiles = array();
 
     /**
      * Get application instance
