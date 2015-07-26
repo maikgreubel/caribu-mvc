@@ -382,6 +382,15 @@ class Request
                 $result = function_exists('boolval') ? boolval($result) : (bool)$result;
                 break;
 
+            case 'double':
+            case 'float':
+                $result = doubleval($result);
+                break;
+
+            case 'int':
+                $result = intval($result);
+                break;
+
             case 'string':
             default:
                 $result = htmlentities(strval($result));
