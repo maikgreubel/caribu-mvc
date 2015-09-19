@@ -10,7 +10,6 @@ use \Nkey\Caribu\Mvc\View\View;
 use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerAwareTrait;
 use \Psr\Log\NullLogger;
-use PhpParser\Node\Expr\Instanceof_;
 
 /**
  * The MVC Application main class

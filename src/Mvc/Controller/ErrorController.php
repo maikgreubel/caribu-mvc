@@ -1,7 +1,6 @@
 <?php
 namespace Nkey\Caribu\Mvc\Controller;
 
-use \Nkey\Caribu\Mvc\View\View;
 use Generics\Client\HttpStatus;
 
 /**
