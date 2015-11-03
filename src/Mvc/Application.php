@@ -26,7 +26,7 @@ use \Psr\Log\NullLogger;
  * calling the Application::serve() function
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 final class Application implements LoggerAwareInterface
@@ -94,18 +94,21 @@ final class Application implements LoggerAwareInterface
 
     /**
      * The client request headers to override
+     *
      * @var array
      */
     private $overridenClientHeaders = array();
 
     /**
      * Additional css files to include in view
+     *
      * @var array
      */
     private $cssFiles = array();
 
     /**
      * Additional javascript files to include in view
+     *
      * @var array
      */
     private $jsFiles = array();
@@ -144,7 +147,7 @@ final class Application implements LoggerAwareInterface
         $this->setDefaults();
         $this->init();
         $this->setLogger(new NullLogger());
-
+        
         return $this;
     }
 
@@ -180,7 +183,7 @@ final class Application implements LoggerAwareInterface
     {
         $this->defaultController = $defaultController;
         $this->defaultAction = $defaultAction;
-
+        
         return $this;
     }
 
@@ -193,7 +196,7 @@ final class Application implements LoggerAwareInterface
      *            Override the default order given by view class
      * @param string $applicationName
      *            The application name where the view will be available in
-     *
+     *            
      * @throws ViewException
      *
      * @return Application Current application instance
@@ -205,7 +208,7 @@ final class Application implements LoggerAwareInterface
                 'view' => $view
             ));
         }
-
+        
         $v = new $view();
         if (! $v instanceof View) {
             throw new ViewException("View {view} is not in application scope", array(
@@ -216,19 +219,21 @@ final class Application implements LoggerAwareInterface
         if (null != $order) {
             $viewOrder = intval($order);
         }
-
+        
         $settings = $v->getViewSettings();
         $this->views[$applicationName][$viewOrder][$settings->getViewSimpleName()] = $settings;
-
+        
         return $this;
     }
 
     /**
      * Register a view control
      *
-     * @param string $controlIdentifier The identifier under which the control will be registered
-     * @param string $controlClass The class of control
-     *
+     * @param string $controlIdentifier
+     *            The identifier under which the control will be registered
+     * @param string $controlClass
+     *            The class of control
+     *            
      * @return Application Current application instance
      */
     public function registerViewControl($controlIdentifier, $controlClass)
@@ -244,7 +249,7 @@ final class Application implements LoggerAwareInterface
      *            The view to unregister
      * @param string $applicationName
      *            Optional application name where the view is registered
-     *
+     *            
      * @return Application Current application instance
      */
     public function unregisterView($view, $order, $applicationName = 'default')
@@ -260,15 +265,15 @@ final class Application implements LoggerAwareInterface
      *
      * @param Request $request
      *            The request to get best view for
-     *
+     *            
      * @return View The view best matched for the request
-     *
+     *        
      * @throws ViewException
      */
     private function getViewBestMatch(Request $request, $applicationName)
     {
         $best = null;
-
+        
         if (count($this->views[$applicationName]) > 0) {
             foreach ($this->views[$applicationName] as $orderLevel => $views) {
                 foreach ($views as $view) {
@@ -280,15 +285,14 @@ final class Application implements LoggerAwareInterface
                 }
             }
         }
-
         if (null == $best) {
             throw new ViewException("No view found for request");
         }
-
+        
         if (count($best) > 1) {
-            rsort($best);
+            krsort($best);
         }
-
+        
         return reset($best);
     }
 
@@ -299,9 +303,9 @@ final class Application implements LoggerAwareInterface
      *            The full qualified name of controller class to register
      * @param string $applicationName
      *            Optional name of application where controller will be registered in
-     *
+     *            
      * @return Application Current application instance
-     *
+     *        
      * @throws ControllerException
      */
     public function registerController($controller, $applicationName = 'default')
@@ -317,10 +321,10 @@ final class Application implements LoggerAwareInterface
                 'controller' => $controller
             ));
         }
-
+        
         $settings = $c->getControllerSettings();
         $this->controllers[$applicationName][$settings->getControllerSimpleName()] = $settings;
-
+        
         return $this;
     }
 
@@ -329,13 +333,13 @@ final class Application implements LoggerAwareInterface
      *
      * @param string $applicationName
      *            Optional application name to service the request for
-     *
+     *            
      * @param Request $request
      *            Optional previous generated request object
-     *
+     *            
      * @param boolean $send
      *            Optional whether to send the output directly to client
-     *
+     *            
      * @throws ControllerException
      * @throws InvalidUrlException
      */
@@ -344,20 +348,20 @@ final class Application implements LoggerAwareInterface
         if (null == $request) {
             $request = Request::parseFromServerRequest($this->defaultController, $this->defaultAction);
         }
-
+        
         foreach ($this->overridenClientHeaders as $headerName => $headerValue) {
             $request->setParam($headerName, $headerValue);
         }
-
+        
         $controller = $request->getController();
         $action = $request->getAction();
-
+        
         $this->getLogger()->debug("[{remote}] Requested controller is {controller} and action is {action}", array(
             'remote' => $request->getRemoteHost(),
             'controller' => $controller,
             'action' => $action
         ));
-
+        
         if (! isset($this->controllers[$applicationName][$controller])) {
             $this->getLogger()->error("[{remote}] No such controller {controller}", array(
                 'remote' => $request->getRemoteHost(),
@@ -366,7 +370,7 @@ final class Application implements LoggerAwareInterface
             $controller = 'Error';
             $action = 'error';
         }
-
+        
         $controllerInstance = $this->controllers[$applicationName][$controller];
         assert($controllerInstance instanceof AbstractController);
         if (! $controllerInstance->hasAction($action)) {
@@ -377,60 +381,58 @@ final class Application implements LoggerAwareInterface
             $controllerInstance = $this->controllers[$applicationName]['Error'];
             $action = 'error';
         }
-
+        
         $this->getLogger()->debug("[{remote}] Routing request to {controller}:{action}", array(
             'remote' => $request->getRemoteHost(),
             'controller' => $controller,
             'action' => $action
         ));
-
+        
         $view = $this->getViewBestMatch($request, $applicationName);
+        
         $view->setCssFiles($this->cssFiles);
         $view->setJsFiles($this->jsFiles);
-
-        foreach($this->viewControls as $controlIdentifier => $controlClass) {
+        
+        foreach ($this->viewControls as $controlIdentifier => $controlClass) {
             $view->registerControl($controlClass, $controlIdentifier);
         }
-
-        try
-        {
+        
+        try {
             $response = $controllerInstance->call($action, $request, $view);
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $controllerInstance = $this->controllers[$applicationName]['Error'];
             $action = 'exception';
             $request->setException($ex);
             $response = $controllerInstance->call($action, $request, $view);
         }
-
+        
         $responseCode = $response->getHttpCode();
         $responseLen = strlen($response);
         $responseType = sprintf('%s;%s', $response->getType(), $response->getEncoding());
         $responseContent = strval($response);
-
+        
         $this->getLogger()->debug("[{remote}] Response is type of {type}, length of {length} and code {code}", array(
             'remote' => $request->getRemoteHost(),
             'type' => $responseType,
             'length' => $responseLen,
             'code' => $responseCode
         ));
-
+        
         if ($send) {
             header(sprintf("%s", $responseCode));
             header(sprintf("Content-Length: %d", $responseLen));
             header(sprintf("Content-Type: %s", $responseType));
-
+            
             foreach ($this->defaultHeaders as $headerName => $headerValue) {
                 header(sprintf("%s: %s", $headerName, $headerValue));
             }
             foreach ($response->getAdditionalHeaders() as $headerName => $headerValue) {
                 header(sprintf("%s: %s", $headerName, $headerValue));
             }
-
+            
             echo $responseContent;
         }
-
+        
         return $response;
     }
 
@@ -442,7 +444,7 @@ final class Application implements LoggerAwareInterface
     public function enableSession()
     {
         session_start();
-
+        
         return $this;
     }
 
@@ -471,9 +473,11 @@ final class Application implements LoggerAwareInterface
      *
      * Existing header will be overriden.
      *
-     * @param string $name The header identifier
-     * @param string $value The value to set
-     *
+     * @param string $name
+     *            The header identifier
+     * @param string $value
+     *            The value to set
+     *            
      * @return Application The current application instance
      */
     public function addHeader($name, $value)
@@ -485,9 +489,11 @@ final class Application implements LoggerAwareInterface
     /**
      * Add a header to overide a client request header
      *
-     * @param string $name The header name to override
-     * @param string $value The value to override
-     *
+     * @param string $name
+     *            The header name to override
+     * @param string $value
+     *            The value to override
+     *            
      * @return Application The current application instance
      */
     public function addOverridenClientHeader($name, $value)
@@ -499,7 +505,7 @@ final class Application implements LoggerAwareInterface
     /**
      * Add an uri for an additional javascript file
      *
-     * @param string $file
+     * @param string $file            
      * @return Application the current application instance
      */
     public function addJsFile($file)
@@ -510,7 +516,8 @@ final class Application implements LoggerAwareInterface
 
     /**
      * Add an uri for an additional css file
-     * @param string $file
+     *
+     * @param string $file            
      * @return Application the current application instance
      */
     public function addCssFile($file)

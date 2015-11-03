@@ -1,6 +1,8 @@
 <?php
 namespace Nkey\Caribu\Mvc\Tests;
 
+require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+
 require_once dirname(__FILE__) . '/FeatureTestController.php';
 require_once dirname(__FILE__) . '/InvalidView.php';
 require_once dirname(__FILE__) . '/DoNothingView.php';
@@ -74,4 +76,14 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         
         Application::getInstance()->serve('default', $request, false);
     }
+
+    static function main()
+    {
+        $suite = new \PHPUnit_Framework_TestSuite(__CLASS__);
+        \PHPUnit_TextUI_TestRunner::run($suite);
+    }
+}
+
+if (! defined('PHPUnit_MAIN_METHOD')) {
+    ViewTest::main();
 }
