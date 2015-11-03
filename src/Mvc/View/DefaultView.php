@@ -16,7 +16,7 @@ use \Nkey\Caribu\Mvc\View\AbstractView;
  * @applyTo(controller=any,action=any)
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 class DefaultView extends AbstractView
@@ -29,7 +29,7 @@ class DefaultView extends AbstractView
      */
     public function getOrder()
     {
-        return -1;
+        return 0;
     }
 
     /**
@@ -52,7 +52,7 @@ class DefaultView extends AbstractView
 </body>
 
 </html>", $response->getTitle(), $response->getBody());
-
+            
             $response->setBody($html);
         }
     }
