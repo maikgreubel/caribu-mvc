@@ -1,6 +1,8 @@
 
 [![Build Status](https://travis-ci.org/maikgreubel/caribu-mvc.png)](https://travis-ci.org/maikgreubel/caribu-mvc)
-[![Coverage Status](https://coveralls.io/repos/maikgreubel/caribu-mvc/badge.svg)](https://coveralls.io/r/maikgreubel/caribu-mvc)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/maikgreubel/caribu-mvc/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/maikgreubel/caribu-mvc/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/maikgreubel/caribu-mvc/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/maikgreubel/caribu-mvc/?branch=master)
+[![Dependency Status](https://www.versioneye.com/user/projects/56392b3ac30cb5000b000554/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56392b3ac30cb5000b000554)
 
 # caribu-mvc
 
