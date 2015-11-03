@@ -7,7 +7,7 @@ use \Generics\Socket\InvalidUrlException;
  * The request is encapsulated in this class
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 class Request
@@ -79,7 +79,7 @@ class Request
     /**
      * Parse the remote host variables to determine client address
      *
-     * @param Request $request
+     * @param Request $request            
      */
     private static function parseRemoteHost(Request &$request)
     {
@@ -95,7 +95,7 @@ class Request
      * Parse the context prefix variables to determine in which path
      * context the request has been performed.
      *
-     * @param Request $request
+     * @param Request $request            
      */
     private static function parseContextPrefix(Request &$request)
     {
@@ -117,11 +117,15 @@ class Request
     /**
      * Parse the prepared uri into its parts
      *
-     * @param Request $request The unprepared request object
-     * @param string $uri The prepared uri
-     * @param string $defaultController The name of default controller if nothing is requested
-     * @param string $defaultAction The name of default action if nothing is requested
-     *
+     * @param Request $request
+     *            The unprepared request object
+     * @param string $uri
+     *            The prepared uri
+     * @param string $defaultController
+     *            The name of default controller if nothing is requested
+     * @param string $defaultAction
+     *            The name of default action if nothing is requested
+     *            
      * @return array Parsed parts for later usage
      */
     private static function parseUri(Request &$request, $uri, $defaultController, $defaultAction)
@@ -131,16 +135,16 @@ class Request
         if (null != $request->contextPrefix && '/' != $request->contextPrefix) {
             $contextUri = str_replace($request->contextPrefix, '', $uri);
         }
-
+        
         // Split parts
         $parts = array();
         if ($contextUri != '') {
-            while ($contextUri[0] == '/') {
+            while (isset($contextUri[0]) && $contextUri[0] == '/') {
                 $contextUri = substr($contextUri, 1);
             }
             $parts = explode('/', $contextUri);
         }
-
+        
         // Check if there was a controller requested
         if (count($parts) > 0) {
             $request->controller = ucfirst(trim($parts[0]));
@@ -149,7 +153,7 @@ class Request
                 $request->controller = $defaultController;
             }
         }
-
+        
         // Check if there was an action requested
         if (count($parts) > 0) {
             $request->action = trim($parts[0]);
@@ -158,31 +162,32 @@ class Request
                 $request->action = $defaultAction;
             }
         }
-
+        
         return $parts;
     }
 
     /**
      * Parse the super globals for request parameters
      *
-     * @param Request $request Request object to put the parameters in
+     * @param Request $request
+     *            Request object to put the parameters in
      */
     private static function parseGetPostSessionCookie(Request &$request)
     {
-        foreach($_GET as $name => $value) {
+        foreach ($_GET as $name => $value) {
             $request->params[$name] = $value;
         }
-        foreach($_POST as $name => $value) {
+        foreach ($_POST as $name => $value) {
             $request->params[$name] = $value;
         }
-        foreach($_COOKIE as $name => $value) {
+        foreach ($_COOKIE as $name => $value) {
             $request->params[$name] = $value;
         }
-        foreach($_FILES as $name => $value) {
+        foreach ($_FILES as $name => $value) {
             $request->params[$name] = $value;
         }
         if (isset($_SESSION)) {
-            foreach($_SESSION as $name => $value) {
+            foreach ($_SESSION as $name => $value) {
                 $request->params[$name] = $value;
             }
         }
@@ -193,29 +198,29 @@ class Request
      *
      * @param string $uri
      *            The uri to parse
-     *
+     *            
      * @return \Nkey\Caribu\Mvc\Controller\Request The new created request
      */
     public static function parse($uri, $defaultController = 'Index', $defaultAction = 'index')
     {
         $req = new self($defaultController, $defaultAction);
         $req->origin = $uri;
-
+        
         self::parseRemoteHost($req);
-
+        
         self::parseGetPostSessionCookie($req);
-
+        
         // Save the request parameters for later usage and rewrite the uri
         $savedRequestParams = array();
         if (strpos($uri, '?')) {
             parse_str(substr($uri, strpos($uri, '?') + 1), $savedRequestParams);
             $uri = substr($uri, 0, strpos($uri, '?'));
         }
-
+        
         self::parseContextPrefix($req);
-
+        
         $parts = self::parseUri($req, $uri, $defaultController, $defaultAction);
-
+        
         // Walk over all parameters and put them into container
         for ($i = 0; $i < count($parts); $i = $i + 2) {
             $paramName = trim($parts[$i]);
@@ -224,12 +229,12 @@ class Request
                 $req->params[$paramName] = $paramValue;
             }
         }
-
+        
         $req->params = array_merge($req->params, $savedRequestParams);
-
+        
         // Read the options from http headers
         if (isset($_SERVER['HTTP_ACCEPT'])) {
-            $req->params['Accept'] =  $_SERVER['HTTP_ACCEPT'];
+            $req->params['Accept'] = $_SERVER['HTTP_ACCEPT'];
         }
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $req->params['Accept-Language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
@@ -250,14 +255,14 @@ class Request
             $req->params['Cache-Control'] = $_SERVER['HTTP_CACHE_COTROL'];
         }
         if (isset($_SERVER['HTTP_CONNECTION'])) {
-            $req->params['Connection'] =  $_SERVER['HTTP_CONNECTION'];
+            $req->params['Connection'] = $_SERVER['HTTP_CONNECTION'];
         }
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $req->params['X-Forwarded-For'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
-
+        
         if (isset($req->params['Accept-Language'])) {
-            $accepted = explode(',',$req->params['Accept-Language']);
+            $accepted = explode(',', $req->params['Accept-Language']);
             $req->params['Accept-Language-Best'] = $accepted[0];
             foreach ($accepted as $acceptedLang) {
                 $matches = array();
@@ -268,7 +273,7 @@ class Request
                 }
             }
         }
-
+        
         // Et'voila
         return $req;
     }
@@ -280,7 +285,7 @@ class Request
      *            name of the default controller
      * @param $defaultAction The
      *            name of the default action
-     *
+     *            
      * @return \Nkey\Caribu\Mvc\Controller\Request
      *
      * @throws InvalidUrlException If no uri exists (e.g. sapi = cli)
@@ -356,7 +361,8 @@ class Request
     /**
      * Check whether a given parameter exists
      *
-     * @param string $name The name of the parameter
+     * @param string $name
+     *            The name of the parameter
      * @return boolean true in case of it exists, false otherwise
      */
     public function hasParam($name)
@@ -367,62 +373,68 @@ class Request
     /**
      * Get value of particular parameter
      *
-     * @param string $name The name of parameters
-     * @param string $typeOf The type expected parameter value
+     * @param string $name
+     *            The name of parameters
+     * @param string $typeOf
+     *            The type expected parameter value
      * @return mixed Depending on $typeOf the value as requested type and escaped
      */
     public function getParam($name, $typeOf = 'string')
     {
         $result = $this->hasParam($name) ? $this->params[$name] : null;
-
-        switch($typeOf) {
-
+        
+        switch ($typeOf) {
+            
             case 'bool':
             case 'boolean':
-                $result = function_exists('boolval') ? boolval($result) : (bool)$result;
+                $result = function_exists('boolval') ? boolval($result) : (bool) $result;
                 break;
-
+            
             case 'double':
             case 'float':
                 $result = doubleval($result);
                 break;
-
+            
             case 'int':
                 $result = intval($result);
                 break;
-
+            
             case 'string':
             default:
                 $result = htmlentities(strval($result));
                 break;
         }
-
+        
         return $result;
     }
 
     /**
      * To override a given parameter
      *
-     * @param string $name The parameter name to override
-     * @param string $value The value to override
-     *
+     * @param string $name
+     *            The parameter name to override
+     * @param string $value
+     *            The value to override
+     *            
      * @return Request the current request as fluent interface
-     *
+     *        
      * @throws ControllerException in case of the parameter does not exist
      */
     public function setParam($name, $value)
     {
-        if (!$this->hasParam($name)) {
-            throw new ControllerException("Parameter {param} does not exist", array('param' => $name));
+        if (! $this->hasParam($name)) {
+            throw new ControllerException("Parameter {param} does not exist", array(
+                'param' => $name
+            ));
         }
-
+        
         $this->params[$name] = $value;
     }
 
     /**
      * Set the exception occured
      *
-     * @param Exception $ex
+     * @param Exception $ex            
      *
      * @return Request the current request instance
      */

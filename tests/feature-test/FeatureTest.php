@@ -1,12 +1,13 @@
 <?php
 namespace Nkey\Caribu\Mvc\Tests;
 
-require_once dirname(__FILE__).'/FeatureTestController.php';
-require_once dirname(__FILE__).'/InvalidController.php';
+require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+
+require_once dirname(__FILE__) . '/FeatureTestController.php';
+require_once dirname(__FILE__) . '/InvalidController.php';
 
 use \Nkey\Caribu\Mvc\Controller\Request;
 use \Nkey\Caribu\Mvc\Application;
-
 use \Nkey\Caribu\Mvc\Tests\FeatureTestController;
 use \Nkey\Caribu\Mvc\Tests\InvalidController;
 
@@ -14,15 +15,15 @@ use \Nkey\Caribu\Mvc\Tests\InvalidController;
  * Feature test case
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 class FeatureTest extends \PHPUnit_Framework_TestCase
 {
+
     protected function setUp()
     {
-        Application::getInstance()
-            ->setUp()
+        Application::getInstance()->setUp()
             ->registerController('Nkey\Caribu\Mvc\Tests\FeatureTestController')
             ->setDefaults('FeatureTest');
     }
@@ -30,12 +31,12 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testFeature()
     {
         $request = Request::parse("/featureTest/index");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals(0, count($request->getParams()));
         $this->assertEquals('/featureTest/index', $request->getOrigin());
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
         $this->assertEquals('FeatureTest', $response->getTitle());
@@ -46,9 +47,9 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testNoAction()
     {
         $request = Request::parse("/featureTest/noAction");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals(404, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
         $this->assertContains('<h2>Not Found</h2>', $response->getBody());
@@ -59,9 +60,9 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testNonWebMethod()
     {
         $request = Request::parse("/featureTest/nonWebMethod");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals(404, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
         $this->assertContains('<h2>Not Found</h2>', $response->getBody());
@@ -72,12 +73,12 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testDefaults()
     {
         $request = Request::parse("/");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals('Index', $request->getController());
         $this->assertEquals('index', $request->getAction());
-
+        
         $this->assertEquals(404, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
     }
@@ -85,9 +86,9 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testNoController()
     {
         $request = Request::parse("/zest/index");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals(404, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
     }
@@ -95,9 +96,9 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testFeatureParams()
     {
         $request = Request::parse("/featureTest/params/id/24/perform/save");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/plain', $response->getType());
         $this->assertEquals("id = 24\nperform = save\n", $response->getBody());
@@ -106,9 +107,9 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testFeatureParamsQueryString()
     {
         $request = Request::parse("/featureTest/params/?id=24&perform=save");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/plain', $response->getType());
         $this->assertEquals("id = 24\nperform = save\n", $response->getBody());
@@ -117,9 +118,9 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     public function testRemoteAddress()
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-
+        
         $request = Request::parse("/featureTest/index");
-
+        
         $this->assertEquals('127.0.0.1', $request->getRemoteHost());
     }
 
@@ -127,97 +128,96 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.2';
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '127.0.0.1';
-
+        
         $request = Request::parse("/featureTest/index");
-
+        
         $this->assertEquals('127.0.0.1', $request->getRemoteHost());
     }
 
-
     public function testSimulateHttpServer()
     {
-        $_SERVER['REMOTE_ADDR']     = '::1';
-        $_SERVER['SERVER_ADDR']     = '::1';
-        $_SERVER['DOCUMENT_ROOT']   = '/var/www/html';
-        $_SERVER['REDIRECT_BASE']   = '/caribu-mvc/tests/';
-        $_SERVER['REDIRECT_URL']    = '/caribu-mvc/tests/featureTest/';
-        $_SERVER['SCRIPT_NAME']     = '/var/www/html/caribu-mvc/tests/index.php';
-        $_SERVER['SCRIPT_NAME']     = '/caribu-mvc/tests/index.php';
-
+        $_SERVER['REMOTE_ADDR'] = '::1';
+        $_SERVER['SERVER_ADDR'] = '::1';
+        $_SERVER['DOCUMENT_ROOT'] = '/var/www/html';
+        $_SERVER['REDIRECT_BASE'] = '/caribu-mvc/tests/';
+        $_SERVER['REDIRECT_URL'] = '/caribu-mvc/tests/featureTest/';
+        $_SERVER['SCRIPT_NAME'] = '/var/www/html/caribu-mvc/tests/index.php';
+        $_SERVER['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
+        
         $request = Request::parse("/featureTest/index");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals('FeatureTest', $request->getController());
         $this->assertEquals('index', $request->getAction());
         $this->assertEquals('/caribu-mvc/tests/', $request->getContextPrefix());
         $this->assertEquals('::1', $request->getRemoteHost());
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
     }
 
     public function testSimulateHttpServerImplicitRequest()
     {
-        $_SERVER['REMOTE_ADDR']     = '::1';
-        $_SERVER['SERVER_ADDR']     = '::1';
-        $_SERVER['DOCUMENT_ROOT']   = '/var/www/html';
-        $_SERVER['REDIRECT_BASE']   = '/caribu-mvc/tests/';
-        $_SERVER['REDIRECT_URL']    = '/caribu-mvc/tests/featureTest/';
-        $_SERVER['SCRIPT_NAME']     = '/var/www/html/caribu-mvc/tests/index.php';
-        $_SERVER['SCRIPT_NAME']     = '/caribu-mvc/tests/index.php';
-        $_SERVER['REQUEST_URI']     = '/featureTest/index';
-
+        $_SERVER['REMOTE_ADDR'] = '::1';
+        $_SERVER['SERVER_ADDR'] = '::1';
+        $_SERVER['DOCUMENT_ROOT'] = '/var/www/html';
+        $_SERVER['REDIRECT_BASE'] = '/caribu-mvc/tests/';
+        $_SERVER['REDIRECT_URL'] = '/caribu-mvc/tests/featureTest/';
+        $_SERVER['SCRIPT_NAME'] = '/var/www/html/caribu-mvc/tests/index.php';
+        $_SERVER['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
+        $_SERVER['REQUEST_URI'] = '/featureTest/index';
+        
         $response = Application::getInstance()->serve('default', null, false);
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
     }
 
     public function testSimulateHttpServerContextPrefix()
     {
-        $_SERVER['REMOTE_ADDR']     = '::1';
-        $_SERVER['HTTP_HOST']       = '::1';
-        $_SERVER['DOCUMENT_ROOT']   = '/var/www/html';
-        $_SERVER['REDIRECT_BASE']   = '/caribu-mvc-test/';
-        $_SERVER['CONTEXT_PREFIX']  = '/caribu-mvc-test';
-        $_SERVER['REDIRECT_URL']    = '/caribu-mvc-test/featureTest/';
-        $_SERVER['SCRIPT_NAME']     = '/var/www/html/caribu-mvc/tests/index.php';
-        $_SERVER['SCRIPT_NAME']     = '/caribu-mvc/tests/index.php';
-
+        $_SERVER['REMOTE_ADDR'] = '::1';
+        $_SERVER['HTTP_HOST'] = '::1';
+        $_SERVER['DOCUMENT_ROOT'] = '/var/www/html';
+        $_SERVER['REDIRECT_BASE'] = '/caribu-mvc-test/';
+        $_SERVER['CONTEXT_PREFIX'] = '/caribu-mvc-test';
+        $_SERVER['REDIRECT_URL'] = '/caribu-mvc-test/featureTest/';
+        $_SERVER['SCRIPT_NAME'] = '/var/www/html/caribu-mvc/tests/index.php';
+        $_SERVER['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
+        
         $request = Request::parse("/featureTest/index");
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals('FeatureTest', $request->getController());
         $this->assertEquals('index', $request->getAction());
         $this->assertEquals('/caribu-mvc-test/', $request->getContextPrefix());
         $this->assertEquals('::1', $request->getRemoteHost());
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
     }
 
     public function testRequestUri()
     {
-        $_SERVER['REMOTE_ADDR']     = '::1';
-        $_SERVER['HTTP_HOST']       = '::1';
-        $_SERVER['DOCUMENT_ROOT']   = '/var/www/html';
-        $_SERVER['REDIRECT_BASE']   = '/caribu-mvc-test/';
-        $_SERVER['REDIRECT_URL']    = '/caribu-mvc-test/featureTest/';
-        $_SERVER['SCRIPT_NAME']     = '/var/www/html/caribu-mvc/tests/index.php';
-        $_SERVER['SCRIPT_NAME']     = '/caribu-mvc/tests/index.php';
-        $_SERVER['REQUEST_URI']     = '/featureTest/index';
-
+        $_SERVER['REMOTE_ADDR'] = '::1';
+        $_SERVER['HTTP_HOST'] = '::1';
+        $_SERVER['DOCUMENT_ROOT'] = '/var/www/html';
+        $_SERVER['REDIRECT_BASE'] = '/caribu-mvc-test/';
+        $_SERVER['REDIRECT_URL'] = '/caribu-mvc-test/featureTest/';
+        $_SERVER['SCRIPT_NAME'] = '/var/www/html/caribu-mvc/tests/index.php';
+        $_SERVER['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
+        $_SERVER['REQUEST_URI'] = '/featureTest/index';
+        
         $request = Request::parseFromServerRequest();
-
+        
         $response = Application::getInstance()->serve('default', $request, false);
-
+        
         $this->assertEquals('FeatureTest', $request->getController());
         $this->assertEquals('index', $request->getAction());
         $this->assertEquals('/caribu-mvc-test/', $request->getContextPrefix());
         $this->assertEquals('::1', $request->getRemoteHost());
-
+        
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
     }
@@ -257,4 +257,15 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     {
         Application::getInstance()->registerController('\Nkey\Caribu\Mvc\Tests\InvalidController');
     }
+
+    static function main()
+    {
+        $suite = new \PHPUnit_Framework_TestSuite(__CLASS__);
+        \PHPUnit_TextUI_TestRunner::run($suite);
+    }
 }
+
+if (! defined('PHPUnit_MAIN_METHOD')) {
+    ViewTest::main();
+}
+
