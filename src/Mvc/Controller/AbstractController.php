@@ -16,7 +16,7 @@ use Nkey\Caribu\Mvc\Application;
  * All basic functions are final and cannot be overriden.
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 abstract class AbstractController
@@ -67,7 +67,7 @@ abstract class AbstractController
     /**
      * Parse the parameters of action
      *
-     * @param \ReflectionMethod $action
+     * @param \ReflectionMethod $action            
      *
      * @return boolean true if parameters meets conditions for a valid action method, false otherwise
      */
@@ -77,40 +77,40 @@ abstract class AbstractController
         if (count($params) < 1) {
             return false;
         }
-
+        
         $param = $params[0];
         assert($param instanceof \ReflectionParameter);
         if (! ($class = $param->getClass()) || $class->getName() != 'Nkey\Caribu\Mvc\Controller\Request') {
             return false;
         }
-
+        
         return true;
     }
 
     /**
      * Parse the settings out of annotations
      *
-     * @param \ReflectionMethod $action
+     * @param \ReflectionMethod $action            
      */
     private function parseAnnotations(\ReflectionMethod $action)
     {
         if ($action->isConstructor() || $action->isDestructor() || $action->isStatic() || $action->isFinal()) {
             return;
         }
-
-        $rfMethod = new \ReflectionMethod($this, $action->getName());
+        
+        $rfMethod = new \ReflectionMethod($this, $action->name);
         $anno = $rfMethod->getDocComment();
-
+        
         if ($anno && preg_match('#@webMethod#', $anno)) {
-            $this->actions[] = $action->getName();
+            $this->actions[] = $action->name;
             return;
         }
-
-        if (!$this->parseParameters($action)) {
+        
+        if (! $this->parseParameters($action)) {
             return;
         }
-
-        $this->actions[] = $action->getName();
+        
+        $this->actions[] = $action->name;
     }
 
     /**
@@ -121,26 +121,27 @@ abstract class AbstractController
     final public function getControllerSettings()
     {
         $rf = new \ReflectionClass($this);
-
+        
         $this->response = new Response();
         $this->controllerClass = $rf->getShortName();
         $this->controllerName = ucfirst(str_replace('Controller', '', $this->controllerClass));
         $this->response->setTitle($this->controllerName);
-
+        
         $actions = $rf->getMethods(\ReflectionMethod::IS_PUBLIC);
-
+        
         foreach ($actions as $action) {
             $this->parseAnnotations($action);
         }
-
+        
         return $this;
     }
 
     /**
      * Checks whether controller has specific action
      *
-     * @param string $action Name of action to search for
-     *
+     * @param string $action
+     *            Name of action to search for
+     *            
      * @return boolean true if the action exists in controller, false otherwise
      */
     final public function hasAction($action)
@@ -151,35 +152,36 @@ abstract class AbstractController
     /**
      * Call the action
      *
-     * @param string $action The name of action to call in controller
-     *
+     * @param string $action
+     *            The name of action to call in controller
+     *            
      * @return \Nkey\Caribu\Mvc\Controller\Response The response
      */
     final public function call($action, Request $request, View $view)
     {
         $this->request = $request;
-
+        
         ob_start();
-
+        
         $rf = new \ReflectionMethod($this, $action);
-
+        
         $anno = $rf->getDocComment();
         $matches = array();
         if (preg_match('#@responseType ([\w\/]+)#', $anno, $matches)) {
             $this->response->setType($matches[1]);
         }
-
+        
         if (preg_match('#@title ([^\\n]+)#', $anno, $matches)) {
             $this->response->setTitle($matches[1]);
         }
-
+        
         $rf->invoke($this, $this->request);
-
+        
         $this->response->appendBody(ob_get_clean());
-
+        
         $view->render($this->response, $request, $this->viewParams);
         $this->addControls($this->response, $request, $view);
-
+        
         return $this->response;
     }
 
@@ -196,52 +198,50 @@ abstract class AbstractController
     /**
      * Add the controls injected into view parameters
      *
-     * @param Response $response The response rendered with controls
-     * @param Request $request The request
-     * @param View $view The View instance to use for rendering
+     * @param Response $response
+     *            The response rendered with controls
+     * @param Request $request
+     *            The request
+     * @param View $view
+     *            The View instance to use for rendering
      */
     protected function addControls(Response &$response, Request $request, View $view)
     {
         $matches = array();
-
-        while(preg_match("/\{(\w+)=(\w+)\}/", $response->getBody(), $matches)) {
+        
+        while (preg_match("/\{(\w+)=(\w+)\}/", $response->getBody(), $matches)) {
             $controlIdentifier = $matches[1];
             $controlName = $matches[2];
             $currentBody = $response->getBody();
-
-            if(!isset($this->viewParams[$controlIdentifier][$controlName]) ||
-                !$view->hasControl($controlIdentifier)) {
+            
+            if (! isset($this->viewParams[$controlIdentifier][$controlName]) || ! $view->hasControl($controlIdentifier)) {
                 $response->setBody(str_replace($matches[0], '', $currentBody));
                 continue;
             }
-
-
-            $repl = "";
-            if($this->viewParams[$controlIdentifier][$controlName] instanceof Control) {
+            
+            if ($this->viewParams[$controlIdentifier][$controlName] instanceof Control) {
                 $repl = $this->viewParams[$controlIdentifier][$controlName]->render($request);
             } else {
                 $control = $view->createControl($controlIdentifier);
                 $repl = $control->render($request, $this->viewParams[$controlIdentifier][$controlName]);
             }
-            $response->setBody(str_replace(
-                $matches[0],
-                $repl,
-                $currentBody
-            ));
+            $response->setBody(str_replace($matches[0], $repl, $currentBody));
         }
     }
 
     /**
      * Redirects the current request to another site
-     * @param string $controller The name of Controller to
-     * @param string $action
+     *
+     * @param string $controller
+     *            The name of Controller to
+     * @param string $action            
      */
     protected function redirect($controller = null, $action = null)
     {
-        if (null == $controller) {
+        if (null === $controller) {
             $controller = Application::getInstance()->getDefaultController();
         }
-        if (null == $action) {
+        if (null === $action) {
             $action = Application::getInstance()->getDefaultAction();
         }
         $destination = sprintf("Location: %s%s/%s", $this->request->getContextPrefix(), $controller, $action);

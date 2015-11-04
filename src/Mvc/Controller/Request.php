@@ -222,7 +222,8 @@ class Request
         $parts = self::parseUri($req, $uri, $defaultController, $defaultAction);
         
         // Walk over all parameters and put them into container
-        for ($i = 0; $i < count($parts); $i = $i + 2) {
+        $numParts = count($parts);
+        for ($i = 0; $i < $numParts; $i = $i + 2) {
             $paramName = trim($parts[$i]);
             $paramValue = isset($parts[$i + 1]) ? trim($parts[$i + 1]) : '';
             if ($paramName && $paramValue) {

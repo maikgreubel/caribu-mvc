@@ -166,8 +166,8 @@ final class Application implements LoggerAwareInterface
      */
     public function init()
     {
-        $this->registerController('\Nkey\Caribu\Mvc\Controller\ErrorController');
-        $this->registerView('\Nkey\Caribu\Mvc\View\DefaultView');
+        $this->registerController(\Nkey\Caribu\Mvc\Controller\ErrorController::class);
+        $this->registerView(\Nkey\Caribu\Mvc\View\DefaultView::class);
     }
 
     /**
@@ -190,8 +190,8 @@ final class Application implements LoggerAwareInterface
     /**
      * Register a new view
      *
-     * @param AbstractView $view
-     *            The view instance
+     * @param string $view
+     *            The view class
      * @param int $order
      *            Override the default order given by view class
      * @param string $applicationName
@@ -216,7 +216,7 @@ final class Application implements LoggerAwareInterface
             ));
         }
         $viewOrder = $v->getOrder();
-        if (null != $order) {
+        if (null !== $order) {
             $viewOrder = intval($order);
         }
         

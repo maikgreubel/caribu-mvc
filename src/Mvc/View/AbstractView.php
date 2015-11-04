@@ -18,7 +18,7 @@ use \Nkey\Caribu\Mvc\View\View;
  * All basic functions are final and cannot be overriden.
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 abstract class AbstractView implements View
@@ -54,12 +54,14 @@ abstract class AbstractView implements View
 
     /**
      * List of additional css files
+     *
      * @var array
      */
     private $cssFiles = array();
 
     /**
      * List of additional javascript files
+     *
      * @var array
      */
     private $jsFiles = array();
@@ -86,45 +88,43 @@ abstract class AbstractView implements View
     final public function getViewSettings()
     {
         $rf = new \ReflectionClass($this);
-
+        
         $this->viewName = str_replace('View', '', $rf->getShortName());
-
-        if (($anno = $rf->getDocComment())) {
-            $matches = array();
-            if (preg_match("#@applyTo\((.*)\)#", $anno, $matches)) {
-                $params = array();
-                parse_str(str_replace(',', '&', $matches[1]), $params);
-
+        
+        $matches = array();
+        if (preg_match("#@applyTo\((.*)\)#", $rf->getDocComment(), $matches)) {
+            $params = array();
+            parse_str(str_replace(',', '&', $matches[1]), $params);
+            
+            if (is_array($params)) {
                 foreach ($params as $param => $value) {
                     if ($param == 'controller') {
                         $this->controllers = explode('|', $value);
                     }
-
+                    
                     if ($param == 'action') {
                         $this->actions = explode('|', $value);
                     }
                 }
             }
         }
-
+        
         return $this;
     }
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::matchController()
      */
     final public function matchController($controller)
     {
-        return (
-            in_array($controller, $this->controllers) ||
-            in_array('any', $this->controllers) ||
-            count($this->controllers) == 0
-        );
+        return (in_array($controller, $this->controllers) || in_array('any', $this->controllers) || count($this->controllers) == 0);
     }
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::matchAction()
      */
     final public function matchAction($action)
@@ -134,6 +134,7 @@ abstract class AbstractView implements View
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::matchBoth()
      */
     final public function matchBoth($controller, $action)
@@ -153,6 +154,7 @@ abstract class AbstractView implements View
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::registerControl()
      */
     final public function registerControl($controlClass, $controlIdentifier)
@@ -162,6 +164,7 @@ abstract class AbstractView implements View
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::createControl()
      */
     final public function createControl($controlIdentifier)
@@ -172,15 +175,17 @@ abstract class AbstractView implements View
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::hasControl()
      */
     final public function hasControl($controlIdentifier)
     {
-       return isset($this->controls[$controlIdentifier]);
+        return isset($this->controls[$controlIdentifier]);
     }
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::setCssFiles()
      */
     final public function setCssFiles(array $files)
@@ -191,6 +196,7 @@ abstract class AbstractView implements View
 
     /**
      * (non-PHPdoc)
+     *
      * @see \Nkey\Caribu\Mvc\View\View::setJsFiles()
      */
     final public function setJsFiles(array $files)

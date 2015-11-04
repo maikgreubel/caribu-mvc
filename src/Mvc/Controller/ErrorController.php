@@ -13,15 +13,17 @@ use Generics\Client\HttpStatus;
  * function is performed.
  *
  * @author Maik Greubel <greubel@nkey.de>
- *
+ *        
  *         This file is part of Caribu MVC package
  */
 class ErrorController extends AbstractController
 {
+
     /**
      * Error processing method
      *
-     * @param Request $request The request
+     * @param Request $request
+     *            The request
      */
     public function error(Request $request)
     {
@@ -33,12 +35,13 @@ class ErrorController extends AbstractController
     /**
      * Error processing for exceptions
      *
-     * @param \Exception $ex
+     * @param Request $request
+     *            The request which contains an exception
      */
     public function exception(Request $request)
     {
         $ex = $request->getException();
-
+        
         $this->response->setCode(500);
         printf("<h2>%s</h2>", HttpStatus::getStatus(500));
         while ($ex != null) {

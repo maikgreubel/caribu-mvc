@@ -1,5 +1,4 @@
 <?php
-
 namespace Nkey\Caribu\Mvc\Util;
 
 /**
@@ -11,6 +10,7 @@ namespace Nkey\Caribu\Mvc\Util;
  */
 class Session implements \IteratorAggregate
 {
+
     /**
      * The session data
      *
@@ -35,18 +35,18 @@ class Session implements \IteratorAggregate
     /**
      * Create a new session instance
      *
-     * @param string $namespace Optional name of session namespace
+     * @param string $namespace
+     *            Optional name of session namespace
      */
     public function __construct($namespace = null)
     {
         session_start();
         $this->sessionId = session_id();
-
-        if (null == $namespace) {
+        
+        if (null === $namespace) {
             $this->sessionData = $_SESSION;
-        }
-        else {
-            if (!isset($_SESSION[$namespace])) {
+        } else {
+            if (! isset($_SESSION[$namespace])) {
                 $_SESSION[$namespace] = array();
             }
             $this->sessionData = $_SESSION[$namespace];
@@ -56,8 +56,10 @@ class Session implements \IteratorAggregate
     /**
      * Set a specific session key to arbitrary data
      *
-     * @param string $key The session data key
-     * @param mixed $value The value
+     * @param string $key
+     *            The session data key
+     * @param mixed $value
+     *            The value
      */
     public function set($key, $value)
     {
@@ -79,10 +81,9 @@ class Session implements \IteratorAggregate
      */
     private function update()
     {
-        if (null != $this->namespace) {
+        if (null !== $this->namespace) {
             $_SESSION[$this->namespace] = $this->sessionData;
-        }
-        else {
+        } else {
             $_SESSION = $this->sessionData;
         }
     }
@@ -90,7 +91,7 @@ class Session implements \IteratorAggregate
     /**
      * Get specific session data
      *
-     * @param string $key
+     * @param string $key            
      * @return NULL|mixed
      */
     public function get($key)
@@ -101,7 +102,7 @@ class Session implements \IteratorAggregate
     /**
      * Checks whether a specific key exists in session data
      *
-     * @param string $key
+     * @param string $key            
      */
     public function has($key)
     {
@@ -110,6 +111,7 @@ class Session implements \IteratorAggregate
 
     /**
      * (non-PHPdoc)
+     *
      * @see IteratorAggregate::getIterator()
      */
     public function getIterator()
