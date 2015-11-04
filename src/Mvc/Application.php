@@ -334,6 +334,9 @@ final class Application implements LoggerAwareInterface
      * @param string $applicationName
      *            Optional application name to service the request for
      *            
+     * @param
+     *            array The server variables provided by sapi
+     *            
      * @param Request $request
      *            Optional previous generated request object
      *            
@@ -343,10 +346,10 @@ final class Application implements LoggerAwareInterface
      * @throws ControllerException
      * @throws InvalidUrlException
      */
-    public function serve($applicationName = 'default', Request $request = null, $send = true)
+    public function serve($applicationName = 'default', $serverVars, Request $request = null, $send = true)
     {
-        if (null == $request) {
-            $request = Request::parseFromServerRequest($this->defaultController, $this->defaultAction);
+        if (null === $request) {
+            $request = Request::parseFromServerRequest($serverVars, $this->defaultController, $this->defaultAction);
         }
         
         foreach ($this->overridenClientHeaders as $headerName => $headerValue) {

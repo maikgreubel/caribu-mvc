@@ -54,7 +54,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         
         $request = Request::parse("/featureTest/index");
         
-        $response = Application::getInstance()->serve('default', $request, false);
+        $response = Application::getInstance()->serve('default', array(), $request, false);
         
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/html', $response->getType());
@@ -74,7 +74,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         
         $request = Request::parse("/featureTest/index");
         
-        Application::getInstance()->serve('default', $request, false);
+        Application::getInstance()->serve('default', array(), $request, false);
     }
 
     static function main()

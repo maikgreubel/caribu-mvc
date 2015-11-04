@@ -81,13 +81,13 @@ class Request
      *
      * @param Request $request            
      */
-    private static function parseRemoteHost(Request &$request)
+    private static function parseRemoteHost(Request &$request, $serverVars = array())
     {
-        if (isset($_SERVER['REMOTE_ADDR'])) {
-            $request->remoteHost = $_SERVER['REMOTE_ADDR'];
+        if (isset($serverVars['REMOTE_ADDR'])) {
+            $request->remoteHost = $serverVars['REMOTE_ADDR'];
         }
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $request->remoteHost = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        if (isset($serverVars['HTTP_X_FORWARDED_FOR'])) {
+            $request->remoteHost = $serverVars['HTTP_X_FORWARDED_FOR'];
         }
     }
 
@@ -97,19 +97,19 @@ class Request
      *
      * @param Request $request            
      */
-    private static function parseContextPrefix(Request &$request)
+    private static function parseContextPrefix(Request &$request, $serverVars = array())
     {
         // Since apache 2.3.13 we have now an additional index which provides the context
-        if (isset($_SERVER['CONTEXT_PREFIX']) && $_SERVER['CONTEXT_PREFIX'] != '') {
-            $request->contextPrefix = $_SERVER['CONTEXT_PREFIX'] . '/';
-        } elseif (isset($_SERVER['REDIRECT_BASE'])) {
+        if (isset($serverVars['CONTEXT_PREFIX']) && $serverVars['CONTEXT_PREFIX'] != '') {
+            $request->contextPrefix = $serverVars['CONTEXT_PREFIX'] . '/';
+        } elseif (isset($serverVars['REDIRECT_BASE'])) {
             // Try to determine the context from redirect base
-            $request->contextPrefix = $_SERVER['REDIRECT_BASE'];
-        } elseif (isset($_SERVER['SCRIPT_FILENAME']) && isset($_SERVER['SCRIPT_NAME'])) {
+            $request->contextPrefix = $serverVars['REDIRECT_BASE'];
+        } elseif (isset($serverVars['SCRIPT_FILENAME']) && isset($serverVars['SCRIPT_NAME'])) {
             // Fallback - get context out of script path
-            if (isset($_SERVER['HTTP_HOST'])) {
-                $scriptName = preg_replace('/^.+[\\\\\\/]/', '', $_SERVER['SCRIPT_FILENAME']);
-                $request->contextPrefix = str_replace($scriptName, '', $_SERVER['SCRIPT_NAME']);
+            if (isset($serverVars['HTTP_HOST'])) {
+                $scriptName = preg_replace('/^.+[\\\\\\/]/', '', $serverVars['SCRIPT_FILENAME']);
+                $request->contextPrefix = str_replace($scriptName, '', $serverVars['SCRIPT_NAME']);
             }
         }
     }
@@ -194,19 +194,82 @@ class Request
     }
 
     /**
+     * Parse a single http header element into parameter for the request object
+     *
+     * @param Request $req
+     *            The destination request object
+     * @param array $serverVars
+     *            The server variables provided by sapi
+     * @param string $elementName
+     *            The element to parse
+     * @param string $paramName
+     *            The destination parameter name
+     */
+    private static function parseElement(Request &$req, $serverVars, $elementName, $paramName)
+    {
+        if (isset($serverVars[$elementName])) {
+            $req->params[$paramName] = $serverVars[$elementName];
+        }
+    }
+
+    /**
+     * Parse the server variables which represents HTTP headers into parameter values for the request object
+     *
+     * @param Request $req
+     *            The request object
+     *            
+     * @param
+     *            array The server variables provided by sapi
+     */
+    private static function parseParameters(Request &$req, $serverVars)
+    {
+        self::parseElement($req, $serverVars, 'HTTP_ACCEPT', 'Accept');
+        self::parseElement($req, $serverVars, 'HTTP_ACCEPT_LANGUAGE', 'Accept-Language');
+        self::parseElement($req, $serverVars, 'HTTP_ACCEPT_ENCODING', 'Accept-Encoding');
+        self::parseElement($req, $serverVars, 'HTTP_UA_CPU', 'User-Agent-CPU');
+        self::parseElement($req, $serverVars, 'HTTP_USER_AGENT', 'User-Agent');
+        self::parseElement($req, $serverVars, 'HTTP_HOST', 'Host');
+        self::parseElement($req, $serverVars, 'HTTP_CACHE_COTROL', 'Cache-Control');
+        self::parseElement($req, $serverVars, 'HTTP_CONNECTION', 'Connection');
+        self::parseElement($req, $serverVars, 'HTTP_X_FORWARDED_FOR', 'X-Forwarded-For');
+        
+        if (isset($req->params['Accept-Language'])) {
+            $accepted = explode(',', $req->params['Accept-Language']);
+            $req->params['Accept-Language-Best'] = $accepted[0];
+            foreach ($accepted as $acceptedLang) {
+                $matches = array();
+                // TODO: Respect the quality field from rfc2616
+                if (preg_match("/^((?i)[a-z]{2}[-_](?:[a-z]{2}){1,2}(?:_[a-z]{2})?).*/", $acceptedLang, $matches)) {
+                    $req->params['Accept-Language-Best'] = $matches[1];
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
      * Parse an uri into its request parts
      *
      * @param string $uri
      *            The uri to parse
      *            
+     * @param array $serverVars
+     *            The variables provided by sapi
+     *            
+     * @param string $defaultController
+     *            The name of the default controller if nothing else is requested
+     *            
+     * @param string $defaultAction
+     *            The name of the default action if nothing else is requested
+     *            
      * @return \Nkey\Caribu\Mvc\Controller\Request The new created request
      */
-    public static function parse($uri, $defaultController = 'Index', $defaultAction = 'index')
+    public static function parse($uri, $serverVars = array(), $defaultController = 'Index', $defaultAction = 'index')
     {
         $req = new self($defaultController, $defaultAction);
         $req->origin = $uri;
         
-        self::parseRemoteHost($req);
+        self::parseRemoteHost($req, $serverVars);
         
         self::parseGetPostSessionCookie($req);
         
@@ -217,7 +280,7 @@ class Request
             $uri = substr($uri, 0, strpos($uri, '?'));
         }
         
-        self::parseContextPrefix($req);
+        self::parseContextPrefix($req, $serverVars);
         
         $parts = self::parseUri($req, $uri, $defaultController, $defaultAction);
         
@@ -233,47 +296,7 @@ class Request
         
         $req->params = array_merge($req->params, $savedRequestParams);
         
-        // Read the options from http headers
-        if (isset($_SERVER['HTTP_ACCEPT'])) {
-            $req->params['Accept'] = $_SERVER['HTTP_ACCEPT'];
-        }
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $req->params['Accept-Language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-        }
-        if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-            $req->params['Accept-Encoding'] = $_SERVER['HTTP_ACCEPT_ENCODING'];
-        }
-        if (isset($_SERVER['HTTP_UA_CPU'])) {
-            $req->params['User-Agent-CPU'] = $_SERVER['HTTP_UA_CPU'];
-        }
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            $req->params['User-Agent'] = $_SERVER['HTTP_USER_AGENT'];
-        }
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $req->params['Host'] = $_SERVER['HTTP_HOST'];
-        }
-        if (isset($_SERVER['HTTP_CACHE_COTROL'])) {
-            $req->params['Cache-Control'] = $_SERVER['HTTP_CACHE_COTROL'];
-        }
-        if (isset($_SERVER['HTTP_CONNECTION'])) {
-            $req->params['Connection'] = $_SERVER['HTTP_CONNECTION'];
-        }
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $req->params['X-Forwarded-For'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        
-        if (isset($req->params['Accept-Language'])) {
-            $accepted = explode(',', $req->params['Accept-Language']);
-            $req->params['Accept-Language-Best'] = $accepted[0];
-            foreach ($accepted as $acceptedLang) {
-                $matches = array();
-                // TODO: Respect the quality field from rfc2616
-                if (preg_match("/^((?i)[a-z]{2}[-_](?:[a-z]{2}){1,2}(?:_[a-z]{2})?).*/", $acceptedLang, $matches)) {
-                    $req->params['Accept-Language-Best'] = $matches[1];
-                    break;
-                }
-            }
-        }
+        self::parseParameters($req, $serverVars);
         
         // Et'voila
         return $req;
@@ -282,6 +305,9 @@ class Request
     /**
      * Parse uri directly from request uri
      *
+     * @param
+     *            array The server variables provided by sapi
+     *            
      * @param $defaultController The
      *            name of the default controller
      * @param $defaultAction The
@@ -291,12 +317,12 @@ class Request
      *
      * @throws InvalidUrlException If no uri exists (e.g. sapi = cli)
      */
-    public static function parseFromServerRequest($defaultController = 'Index', $defaultAction = 'index')
+    public static function parseFromServerRequest($serverVars, $defaultController = 'Index', $defaultAction = 'index')
     {
-        if (! isset($_SERVER['REQUEST_URI'])) {
+        if (! isset($serverVars['REQUEST_URI'])) {
             throw new InvalidUrlException("No such uri provided");
         }
-        return self::parse($_SERVER['REQUEST_URI'], $defaultController, $defaultAction);
+        return self::parse($serverVars['REQUEST_URI'], $serverVars, $defaultController, $defaultAction);
     }
 
     /**

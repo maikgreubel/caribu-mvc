@@ -1,25 +1,28 @@
 <?php
 namespace Nkey\Caribu\Mvc\Tests;
 
+require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+
 use Nkey\Caribu\Mvc\Controller\Request;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
+
+    private $serverVars;
+
     protected function setUp()
     {
-        $_SERVER['REQUEST_URI'] = '/caribu-mvc/tests/';
-        $_SERVER['SCRIPT_FILENAME'] = 'D:/web/caribu-mvc/tests/index.php';
-        $_SERVER['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
-        $_SERVER['HTTP_HOST'] = 'localhost';
+        $this->serverVars = array();
+        $this->serverVars['REQUEST_URI'] = '/caribu-mvc/tests/';
+        $this->serverVars['SCRIPT_FILENAME'] = 'D:/web/caribu-mvc/tests/index.php';
+        $this->serverVars['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
+        $this->serverVars['HTTP_HOST'] = 'localhost';
     }
 
     public function testRequestSimple()
     {
-        // $_SERVER['REDIRECT_BASE'] = '';
-        // $_SERVER['CONTEXT_PREFIX'] = '';
-
-        $request = Request::parseFromServerRequest('Simple', 'index');
-
+        $request = Request::parseFromServerRequest($this->serverVars, 'Simple', 'index');
+        
         $this->assertTrue(is_null($request->getRemoteHost()));
         $this->assertEquals('Simple', $request->getController());
         $this->assertEquals('index', $request->getAction());
@@ -28,9 +31,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testRequestAdvanced()
     {
-        $_SERVER['REMOTE_ADDR'] = '::1';
-        $request = Request::parseFromServerRequest('Simple', 'index');
-
+        $this->serverVars['REMOTE_ADDR'] = '::1';
+        $request = Request::parseFromServerRequest($this->serverVars, 'Simple', 'index');
+        
         $this->assertFalse(is_null($request->getRemoteHost()));
         $this->assertEquals('::1', $request->getRemoteHost());
     }
@@ -40,18 +43,27 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testParameterOverrideNonExisting()
     {
-        $request = Request::parseFromServerRequest('Simple', 'index');
+        $request = Request::parseFromServerRequest($this->serverVars, 'Simple', 'index');
         $request->setParam('Accept-Language', 'de-DE');
     }
 
     public function testParameterOverride()
     {
-        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4';
-        $request = Request::parseFromServerRequest('Simple', 'index');
+        $this->serverVars['HTTP_ACCEPT_LANGUAGE'] = 'de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4';
+        $request = Request::parseFromServerRequest($this->serverVars, 'Simple', 'index');
         $request->setParam('Accept-Language', 'tr-TR');
-
+        
         $this->assertEquals('tr-TR', $request->getParam('Accept-Language'));
         $this->assertEquals('de-DE', $request->getParam('Accept-Language-Best'));
     }
 
+    static function main()
+    {
+        $suite = new \PHPUnit_Framework_TestSuite(__CLASS__);
+        \PHPUnit_TextUI_TestRunner::run($suite);
+    }
+}
+
+if (! defined('PHPUnit_MAIN_METHOD')) {
+    RequestTest::main();
 }
