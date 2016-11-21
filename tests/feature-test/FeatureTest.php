@@ -70,6 +70,26 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('HTTP/1.1 404 Not Found', $response->getHttpCode());
     }
 
+    public function testEx()
+    {
+        $serverVars['REMOTE_ADDR'] = '::1';
+        $serverVars['SERVER_ADDR'] = '::1';
+        $serverVars['DOCUMENT_ROOT'] = '/var/www/html';
+        $serverVars['REDIRECT_BASE'] = '/caribu-mvc/tests/';
+        $serverVars['REDIRECT_URL'] = '/caribu-mvc/tests/featureTest/';
+        $serverVars['SCRIPT_NAME'] = '/var/www/html/caribu-mvc/tests/index.php';
+        $serverVars['SCRIPT_NAME'] = '/caribu-mvc/tests/index.php';
+        
+        $request = Request::parse("/featureTest/exception", $serverVars);
+        
+        $response = Application::getInstance()->serve('default', array(), $request, false);
+        $this->assertEquals(500, $response->getCode());
+        $this->assertEquals('text/html', $response->getType());
+        $this->assertContains('<h2>Internal Server Error</h2>', $response->getBody());
+        $this->assertEquals('Error', $response->getTitle());
+        $this->assertEquals('HTTP/1.1 500 Internal Server Error', $response->getHttpCode());
+    }
+
     public function testDefaults()
     {
         $request = Request::parse("/");
@@ -257,15 +277,4 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     {
         Application::getInstance()->registerController('\Nkey\Caribu\Mvc\Tests\InvalidController');
     }
-
-    static function main()
-    {
-        $suite = new \PHPUnit_Framework_TestSuite(__CLASS__);
-        \PHPUnit_TextUI_TestRunner::run($suite);
-    }
 }
-
-if (! defined('PHPUnit_MAIN_METHOD')) {
-    FeatureTest::main();
-}
-

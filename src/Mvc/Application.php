@@ -407,12 +407,17 @@ final class Application implements LoggerAwareInterface
             $action = 'exception';
             $request->setException($ex);
             $response = $controllerInstance->call($action, $request, $view);
+            
+            $outputBuffer = ob_get_clean();
+            if (strlen($outputBuffer)) {
+                $response->appendBody($outputBuffer);
+            }
         }
         
         $responseCode = $response->getHttpCode();
-        $responseLen = strlen($response);
         $responseType = sprintf('%s;%s', $response->getType(), $response->getEncoding());
         $responseContent = strval($response);
+        $responseLen = strlen($responseContent);
         
         $this->getLogger()->debug("[{remote}] Response is type of {type}, length of {length} and code {code}", array(
             'remote' => $request->getRemoteHost(),

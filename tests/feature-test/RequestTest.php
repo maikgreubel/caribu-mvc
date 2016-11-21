@@ -56,14 +56,4 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('tr-TR', $request->getParam('Accept-Language'));
         $this->assertEquals('de-DE', $request->getParam('Accept-Language-Best'));
     }
-
-    static function main()
-    {
-        $suite = new \PHPUnit_Framework_TestSuite(__CLASS__);
-        \PHPUnit_TextUI_TestRunner::run($suite);
-    }
-}
-
-if (! defined('PHPUnit_MAIN_METHOD')) {
-    RequestTest::main();
 }

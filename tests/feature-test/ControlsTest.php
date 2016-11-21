@@ -65,14 +65,4 @@ class ControlsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Image control', $response->getTitle());
         $this->assertContains('<img src="http://screenshots.de.sftcdn.net/de/scrn/65000/65652/free-abstractions-screensaver-6.jpg" alt="Free image for test"/>', $response->getBody());
     }
-
-    static function main()
-    {
-        $suite = new \PHPUnit_Framework_TestSuite(__CLASS__);
-        \PHPUnit_TextUI_TestRunner::run($suite);
-    }
-}
-
-if (! defined('PHPUnit_MAIN_METHOD')) {
-    ControlsTest::main();
 }
