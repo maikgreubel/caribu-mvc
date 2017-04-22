@@ -198,7 +198,7 @@
 		description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
 		<call-php>
 			<args>
-				<arg path="${basedir}/vendor/squizlabs/php_codesniffer/scripts/phpcs" />
+				<arg path="${basedir}/vendor/squizlabs/php_codesniffer/bin/phpcs" />
 				<arg value="--standard=PSR2" />
 				<arg value="--extensions=php" />
 				<arg value="--ignore=autoload.php" />
@@ -214,7 +214,7 @@
 		description="Find coding standard violations using PHP_CodeSniffer and log result in XML format. Intended for usage within a continuous integration environment.">
 		<call-php failOnError="false">
 			<args>
-				<arg path="${basedir}/vendor/squizlabs/php_codesniffer/scripts/phpcs" />
+				<arg path="${basedir}/vendor/squizlabs/php_codesniffer/bin/phpcs" />
 				<arg value="--report=checkstyle" />
 				<arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
 				<arg value="--standard=PSR2" />
