@@ -18,7 +18,7 @@ use \Nkey\Caribu\Mvc\View\View;
  * All basic functions are final and cannot be overriden.
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 abstract class AbstractView implements View
@@ -119,7 +119,9 @@ abstract class AbstractView implements View
      */
     final public function matchController($controller)
     {
-        return (in_array($controller, $this->controllers) || in_array('any', $this->controllers) || count($this->controllers) == 0);
+        return (in_array($controller, $this->controllers) ||
+				in_array('any', $this->controllers) ||
+				count($this->controllers) == 0);
     }
 
     /**
@@ -129,7 +131,9 @@ abstract class AbstractView implements View
      */
     final public function matchAction($action)
     {
-        return (in_array($action, $this->actions) || in_array('any', $this->actions) || count($this->actions) == 0);
+        return (in_array($action, $this->actions) ||
+        		in_array('any', $this->actions) ||
+        		count($this->actions) == 0);
     }
 
     /**

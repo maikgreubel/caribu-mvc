@@ -1,6 +1,7 @@
 <?php
 namespace Nkey\Caribu\Mvc;
 
+use Generics\Socket\InvalidUrlException;
 use \Generics\GenericsException;
 use \Nkey\Caribu\Mvc\Controller\AbstractController;
 use \Nkey\Caribu\Mvc\Controller\ControllerException;
@@ -26,7 +27,7 @@ use \Psr\Log\NullLogger;
  * calling the Application::serve() function
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 final class Application implements LoggerAwareInterface
@@ -196,7 +197,7 @@ final class Application implements LoggerAwareInterface
      *            Override the default order given by view class
      * @param string $applicationName
      *            The application name where the view will be available in
-     *            
+     *
      * @throws ViewException
      *
      * @return Application Current application instance
@@ -233,7 +234,7 @@ final class Application implements LoggerAwareInterface
      *            The identifier under which the control will be registered
      * @param string $controlClass
      *            The class of control
-     *            
+     *
      * @return Application Current application instance
      */
     public function registerViewControl($controlIdentifier, $controlClass)
@@ -249,7 +250,7 @@ final class Application implements LoggerAwareInterface
      *            The view to unregister
      * @param string $applicationName
      *            Optional application name where the view is registered
-     *            
+     *
      * @return Application Current application instance
      */
     public function unregisterView($view, $order, $applicationName = 'default')
@@ -265,9 +266,9 @@ final class Application implements LoggerAwareInterface
      *
      * @param Request $request
      *            The request to get best view for
-     *            
+     *
      * @return View The view best matched for the request
-     *        
+     *
      * @throws ViewException
      */
     private function getViewBestMatch(Request $request, $applicationName)
@@ -303,9 +304,9 @@ final class Application implements LoggerAwareInterface
      *            The full qualified name of controller class to register
      * @param string $applicationName
      *            Optional name of application where controller will be registered in
-     *            
+     *
      * @return Application Current application instance
-     *        
+     *
      * @throws ControllerException
      */
     public function registerController($controller, $applicationName = 'default')
@@ -333,20 +334,17 @@ final class Application implements LoggerAwareInterface
      *
      * @param string $applicationName
      *            Optional application name to service the request for
-     *            
-     * @param
-     *            array The server variables provided by sapi
-     *            
+     * @param array $serverVars
+     *            The server variables provided by sapi
      * @param Request $request
      *            Optional previous generated request object
-     *            
      * @param boolean $send
      *            Optional whether to send the output directly to client
-     *            
+     *
      * @throws ControllerException
      * @throws InvalidUrlException
      */
-    public function serve($applicationName = 'default', $serverVars, Request $request = null, $send = true)
+    public function serve($applicationName = 'default', $serverVars = array(), Request $request = null, $send = true)
     {
         if (null === $request) {
             $request = Request::parseFromServerRequest($serverVars, $this->defaultController, $this->defaultAction);
@@ -485,7 +483,7 @@ final class Application implements LoggerAwareInterface
      *            The header identifier
      * @param string $value
      *            The value to set
-     *            
+     *
      * @return Application The current application instance
      */
     public function addHeader($name, $value)
@@ -501,7 +499,7 @@ final class Application implements LoggerAwareInterface
      *            The header name to override
      * @param string $value
      *            The value to override
-     *            
+     *
      * @return Application The current application instance
      */
     public function addOverridenClientHeader($name, $value)
@@ -513,7 +511,8 @@ final class Application implements LoggerAwareInterface
     /**
      * Add an uri for an additional javascript file
      *
-     * @param string $file            
+     * @param string $file
+     *
      * @return Application the current application instance
      */
     public function addJsFile($file)
@@ -525,7 +524,8 @@ final class Application implements LoggerAwareInterface
     /**
      * Add an uri for an additional css file
      *
-     * @param string $file            
+     * @param string $file
+     *
      * @return Application the current application instance
      */
     public function addCssFile($file)

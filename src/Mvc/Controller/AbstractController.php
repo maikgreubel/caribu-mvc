@@ -16,7 +16,7 @@ use Nkey\Caribu\Mvc\Application;
  * All basic functions are final and cannot be overriden.
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 abstract class AbstractController
@@ -67,7 +67,7 @@ abstract class AbstractController
     /**
      * Parse the parameters of action
      *
-     * @param \ReflectionMethod $action            
+     * @param \ReflectionMethod $action
      *
      * @return boolean true if parameters meets conditions for a valid action method, false otherwise
      */
@@ -90,7 +90,7 @@ abstract class AbstractController
     /**
      * Parse the settings out of annotations
      *
-     * @param \ReflectionMethod $action            
+     * @param \ReflectionMethod $action
      */
     private function parseAnnotations(\ReflectionMethod $action)
     {
@@ -141,7 +141,7 @@ abstract class AbstractController
      *
      * @param string $action
      *            Name of action to search for
-     *            
+     *
      * @return boolean true if the action exists in controller, false otherwise
      */
     final public function hasAction($action)
@@ -154,7 +154,7 @@ abstract class AbstractController
      *
      * @param string $action
      *            The name of action to call in controller
-     *            
+     *
      * @return \Nkey\Caribu\Mvc\Controller\Response The response
      */
     final public function call($action, Request $request, View $view)
@@ -214,7 +214,8 @@ abstract class AbstractController
             $controlName = $matches[2];
             $currentBody = $response->getBody();
             
-            if (! isset($this->viewParams[$controlIdentifier][$controlName]) || ! $view->hasControl($controlIdentifier)) {
+            if (! isset($this->viewParams[$controlIdentifier][$controlName])
+				|| ! $view->hasControl($controlIdentifier)) {
                 $response->setBody(str_replace($matches[0], '', $currentBody));
                 continue;
             }
@@ -234,7 +235,7 @@ abstract class AbstractController
      *
      * @param string $controller
      *            The name of Controller to
-     * @param string $action            
+     * @param string $action
      */
     protected function redirect($controller = null, $action = null)
     {

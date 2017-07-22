@@ -13,7 +13,7 @@ use Generics\Client\HttpStatus;
  * function is performed.
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 class ErrorController extends AbstractController

@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
 use Nkey\Caribu\Mvc\Controller\Request;
 
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends \PHPUnit\Framework\TestCase
 {
 
     private $serverVars;

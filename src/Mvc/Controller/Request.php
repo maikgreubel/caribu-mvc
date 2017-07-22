@@ -7,7 +7,7 @@ use \Generics\Socket\InvalidUrlException;
  * The request is encapsulated in this class
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 class Request
@@ -82,16 +82,16 @@ class Request
      *
      * @param string $uri
      *            The uri to parse
-     *            
+     *
      * @param array $serverVars
      *            The variables provided by sapi
-     *            
+     *
      * @param string $defaultController
      *            The name of the default controller if nothing else is requested
-     *            
+     *
      * @param string $defaultAction
      *            The name of the default action if nothing else is requested
-     *            
+     *
      * @return \Nkey\Caribu\Mvc\Controller\Request The new created request
      */
     public static function parse($uri, $serverVars = array(), $defaultController = 'Index', $defaultAction = 'index')
@@ -135,14 +135,13 @@ class Request
     /**
      * Parse uri directly from request uri
      *
-     * @param
-     *            array The server variables provided by sapi
-     *            
-     * @param $defaultController The
+     * @param array $serverVars
+     *            The server variables provided by sapi
+     * @param string $defaultController The
      *            name of the default controller
-     * @param $defaultAction The
+     * @param string $defaultAction The
      *            name of the default action
-     *            
+     *
      * @return \Nkey\Caribu\Mvc\Controller\Request
      *
      * @throws InvalidUrlException If no uri exists (e.g. sapi = cli)
@@ -241,7 +240,6 @@ class Request
         $result = $this->hasParam($name) ? $this->params[$name] : null;
         
         switch ($typeOf) {
-            
             case 'bool':
             case 'boolean':
                 $result = function_exists('boolval') ? boolval($result) : (bool) $result;
@@ -272,9 +270,9 @@ class Request
      *            The parameter name to override
      * @param string $value
      *            The value to override
-     *            
+     *
      * @return Request the current request as fluent interface
-     *        
+     *
      * @throws ControllerException in case of the parameter does not exist
      */
     public function setParam($name, $value)
@@ -291,7 +289,7 @@ class Request
     /**
      * Set the exception occured
      *
-     * @param Exception $ex            
+     * @param \Exception $ex
      *
      * @return Request the current request instance
      */

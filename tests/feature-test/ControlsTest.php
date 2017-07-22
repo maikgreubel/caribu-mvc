@@ -7,7 +7,6 @@ require_once dirname(__FILE__) . '/ControlsController.php';
 
 use Nkey\Caribu\Mvc\Application;
 use Nkey\Caribu\Mvc\Controller\Request;
-use \Nkey\Caribu\Mvc\Tests\ControlsController;
 
 /**
  * Controls test case
@@ -16,7 +15,7 @@ use \Nkey\Caribu\Mvc\Tests\ControlsController;
  *        
  *         This file is part of Caribu MVC package
  */
-class ControlsTest extends \PHPUnit_Framework_TestCase
+class ControlsTest extends \PHPUnit\Framework\TestCase
 {
 
     protected function setUp()

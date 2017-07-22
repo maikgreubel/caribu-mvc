@@ -34,7 +34,8 @@ class Form implements Control
             $id = isset($field['id']) ? $field['id'] : $field['name'];
             $class = isset($field['class']) ? $field['class'] : $field['name'];
             
-            $rendered .= sprintf('<input type="%s" id="%s" class="%s" name="%s"/>', $fieldType, $id, $class, $field['name']);
+            $rendered .= sprintf('<input type="%s" id="%s" class="%s" name="%s"/>',
+            		$fieldType, $id, $class, $field['name']);
         }
         
         return $rendered;
@@ -49,7 +50,7 @@ class Form implements Control
      *            The list of buttons to render
      * @throws ControlException
      *
-     * @return Rendered buttons appended to rendered output
+     * @return string Rendered buttons appended to rendered output
      */
     private function renderButtons($rendered, $buttons)
     {
@@ -62,7 +63,8 @@ class Form implements Control
             $class = isset($button['class']) ? $button['class'] : $button['name'];
             $label = isset($button['label']) ? $button['label'] : $button['name'];
             
-            $rendered .= sprintf('<button type="%s" id="%s" class="%s" name="%s">%s</button>', $buttonType, $id, $class, $button['name'], $label);
+            $rendered .= sprintf('<button type="%s" id="%s" class="%s" name="%s">%s</button>',
+            		$buttonType, $id, $class, $button['name'], $label);
         }
         
         return $rendered;
@@ -80,13 +82,17 @@ class Form implements Control
             $contentPrefix = $request->getContextPrefix();
         }
         
-        $formAction = sprintf("%s%s/%s", $contentPrefix, isset($parameters['controller']) ? $parameters['controller'] : lcfirst($request->getController()), isset($parameters['action']) ? $parameters['action'] : lcfirst($request->getAction()));
+        $formAction = sprintf("%s%s/%s", $contentPrefix, isset($parameters['controller']) ?
+        		$parameters['controller'] : lcfirst($request->getController()), isset($parameters['action']) ?
+        			$parameters['action'] : lcfirst($request->getAction()));
         
         if (isset($parameters['formAction'])) {
             $formAction = $parameters['formAction'];
         }
         
-        $rendered = sprintf('<form action="%s" method="%s"%s>', $formAction, isset($parameters['formMethod']) ? $parameters['formMethod'] : "POST", isset($parameters['formClass']) ? (sprintf(' class="%s"', $parameters['formClass'])) : "");
+        $rendered = sprintf('<form action="%s" method="%s"%s>', $formAction, isset($parameters['formMethod']) ?
+        		$parameters['formMethod'] : "POST", isset($parameters['formClass']) ?
+        		(sprintf(' class="%s"', $parameters['formClass'])) : "");
         
         $rendered = $this->renderFields($rendered, $parameters['fields']);
         

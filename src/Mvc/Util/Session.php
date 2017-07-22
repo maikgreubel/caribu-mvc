@@ -1,6 +1,8 @@
 <?php
 namespace Nkey\Caribu\Mvc\Util;
 
+use IteratorAggregate;
+
 /**
  * This class contains to the Caribu MVC package.
  *
@@ -91,7 +93,7 @@ class Session implements \IteratorAggregate
     /**
      * Get specific session data
      *
-     * @param string $key            
+     * @param string $key
      * @return NULL|mixed
      */
     public function get($key)
@@ -102,7 +104,7 @@ class Session implements \IteratorAggregate
     /**
      * Checks whether a specific key exists in session data
      *
-     * @param string $key            
+     * @param string $key
      */
     public function has($key)
     {

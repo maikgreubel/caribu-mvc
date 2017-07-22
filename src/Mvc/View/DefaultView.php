@@ -16,7 +16,7 @@ use \Nkey\Caribu\Mvc\View\AbstractView;
  * @applyTo(controller=any,action=any)
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 class DefaultView extends AbstractView

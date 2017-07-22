@@ -9,9 +9,6 @@ require_once dirname(__FILE__) . '/DoNothingView.php';
 
 use \Nkey\Caribu\Mvc\Controller\Request;
 use \Nkey\Caribu\Mvc\Application;
-use \Nkey\Caribu\Mvc\Tests\FeatureTestController;
-use \Nkey\Caribu\Mvc\Tests\InvalidView;
-use \Nkey\Caribu\Mvc\Tests\DoNothingView;
 
 /**
  * View test case
@@ -20,7 +17,7 @@ use \Nkey\Caribu\Mvc\Tests\DoNothingView;
  *        
  *         This file is part of Caribu MVC package
  */
-class ViewTest extends \PHPUnit_Framework_TestCase
+class ViewTest extends \PHPUnit\Framework\TestCase
 {
 
     protected function setUp()

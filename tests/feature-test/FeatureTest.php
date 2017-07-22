@@ -8,8 +8,6 @@ require_once dirname(__FILE__) . '/InvalidController.php';
 
 use \Nkey\Caribu\Mvc\Controller\Request;
 use \Nkey\Caribu\Mvc\Application;
-use \Nkey\Caribu\Mvc\Tests\FeatureTestController;
-use \Nkey\Caribu\Mvc\Tests\InvalidController;
 
 /**
  * Feature test case
@@ -18,7 +16,7 @@ use \Nkey\Caribu\Mvc\Tests\InvalidController;
  *        
  *         This file is part of Caribu MVC package
  */
-class FeatureTest extends \PHPUnit_Framework_TestCase
+class FeatureTest extends \PHPUnit\Framework\TestCase
 {
 
     protected function setUp()

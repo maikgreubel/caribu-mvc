@@ -1,11 +1,13 @@
 <?php
 namespace Nkey\Caribu\Mvc\Util;
 
+use Nkey\Caribu\Mvc\Controller\Request;
+
 /**
  * Provides the request parsing functionality
  *
  * @author Maik Greubel <greubel@nkey.de>
- *        
+ *
  *         This file is part of Caribu MVC package
  */
 trait RequestParser
@@ -15,9 +17,9 @@ trait RequestParser
      * Parse the context prefix variables to determine in which path
      * context the request has been performed.
      *
-     * @param Request $request            
+     * @param Request $request
      */
-    private static function parseContextPrefix(\Nkey\Caribu\Mvc\Controller\Request &$request, $serverVars = array())
+    private static function parseContextPrefix(Request &$request, $serverVars = array())
     {
         // Since apache 2.3.13 we have now an additional index which provides the context
         if (isset($serverVars['CONTEXT_PREFIX']) && $serverVars['CONTEXT_PREFIX'] != '') {
@@ -45,10 +47,11 @@ trait RequestParser
      *            The name of default controller if nothing is requested
      * @param string $defaultAction
      *            The name of default action if nothing is requested
-     *            
+     *
      * @return array Parsed parts for later usage
      */
-    private static function parseUri(\Nkey\Caribu\Mvc\Controller\Request &$request, $uri, $defaultController, $defaultAction)
+    private static function parseUri(Request &$request,
+    		$uri, $defaultController, $defaultAction)
     {
         // All beyond the context prefix is our application request uri
         $contextUri = $uri;
@@ -98,7 +101,8 @@ trait RequestParser
      * @param string $paramName
      *            The destination parameter name
      */
-    private static function parseElement(\Nkey\Caribu\Mvc\Controller\Request &$req, $serverVars, $elementName, $paramName)
+    private static function parseElement(Request &$req,
+    		$serverVars, $elementName, $paramName)
     {
         if (isset($serverVars[$elementName])) {
             $req->params[$paramName] = $serverVars[$elementName];
@@ -110,11 +114,10 @@ trait RequestParser
      *
      * @param Request $req
      *            The request object
-     *            
-     * @param
-     *            array The server variables provided by sapi
+     * @param array $serverVars
+     *            The server variables provided by sapi
      */
-    private static function parseParameters(\Nkey\Caribu\Mvc\Controller\Request &$req, $serverVars)
+    private static function parseParameters(Request &$req, $serverVars)
     {
         self::parseElement($req, $serverVars, 'HTTP_ACCEPT', 'Accept');
         self::parseElement($req, $serverVars, 'HTTP_ACCEPT_LANGUAGE', 'Accept-Language');
@@ -143,9 +146,9 @@ trait RequestParser
     /**
      * Parse the remote host variables to determine client address
      *
-     * @param Request $request            
+     * @param Request $request
      */
-    private static function parseRemoteHost(\Nkey\Caribu\Mvc\Controller\Request &$request, $serverVars = array())
+    private static function parseRemoteHost(Request &$request, $serverVars = array())
     {
         if (isset($serverVars['REMOTE_ADDR'])) {
             $request->remoteHost = $serverVars['REMOTE_ADDR'];
@@ -161,7 +164,7 @@ trait RequestParser
      * @param Request $request
      *            Request object to put the parameters in
      */
-    private static function parseGetPostSessionCookie(\Nkey\Caribu\Mvc\Controller\Request &$request)
+    private static function parseGetPostSessionCookie(Request &$request)
     {
         foreach ($_GET as $name => $value) {
             $request->params[$name] = $value;
