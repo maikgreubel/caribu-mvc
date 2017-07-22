@@ -31,7 +31,8 @@
 		"pdepend/pdepend" : "~2.0",
 		"phpmd/phpmd" : "~2.0",
 		"sebastian/phpcpd" : "~3.0",
-		"theseer/phpdox" : "~0.9"
+		"theseer/phpdox" : "~0.9",
+		"scrutinizer/ocular" : "~1.0"
 	},
 	"support" : {
 		"email" : "greubel@nkey.de",
