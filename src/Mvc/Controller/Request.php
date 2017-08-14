@@ -173,6 +173,16 @@ class Request
     {
         return $this->controller;
     }
+    
+    /**
+     * Set controller property
+     * 
+     * @param string $controller
+     */
+    public function setController($controller)
+    {
+    	$this->controller = strval($controller);
+    }
 
     /**
      * The requested action
@@ -182,6 +192,16 @@ class Request
     public function getAction()
     {
         return $this->action;
+    }
+    
+    /**
+     * Set action property
+     * 
+     * @param string $action
+     */
+    public function setAction($action)
+    {
+    	$this->action = $action;
     }
 
     /**
@@ -202,6 +222,16 @@ class Request
     public function getContextPrefix()
     {
         return $this->contextPrefix;
+    }
+    
+    /**
+     * Set context prefix property
+     * 
+     * @param string $prefix
+     */
+    public function setContextPrefix($prefix)
+    {
+    	$this->contextPrefix = strval($prefix);
     }
 
     /**
@@ -272,18 +302,11 @@ class Request
      *            The value to override
      *
      * @return Request the current request as fluent interface
-     *
-     * @throws ControllerException in case of the parameter does not exist
      */
     public function setParam($name, $value)
     {
-        if (! $this->hasParam($name)) {
-            throw new ControllerException("Parameter {param} does not exist", array(
-                'param' => $name
-            ));
-        }
-        
         $this->params[$name] = $value;
+        return $this;
     }
 
     /**

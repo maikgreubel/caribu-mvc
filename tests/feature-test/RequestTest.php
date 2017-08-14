@@ -38,9 +38,6 @@ class RequestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('::1', $request->getRemoteHost());
     }
 
-    /**
-     * @expectedException \Nkey\Caribu\Mvc\Controller\ControllerException
-     */
     public function testParameterOverrideNonExisting()
     {
         $request = Request::parseFromServerRequest($this->serverVars, 'Simple', 'index');

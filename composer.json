@@ -11,6 +11,7 @@
 		"psr-4" : {
 			"Nkey\\Caribu\\Mvc\\Tests\\" : [
 				"tests/feature-test",
+				"tests/router-test",
 				"tests"
 			]
 		}

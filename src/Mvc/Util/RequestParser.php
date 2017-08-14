@@ -23,10 +23,10 @@ trait RequestParser
     {
         // Since apache 2.3.13 we have now an additional index which provides the context
         if (isset($serverVars['CONTEXT_PREFIX']) && $serverVars['CONTEXT_PREFIX'] != '') {
-            $request->contextPrefix = $serverVars['CONTEXT_PREFIX'] . '/';
+            $request->setContextPrefix( $serverVars['CONTEXT_PREFIX'] . '/' );
         } elseif (isset($serverVars['REDIRECT_BASE'])) {
             // Try to determine the context from redirect base
-            $request->contextPrefix = $serverVars['REDIRECT_BASE'];
+            $request->setContextPrefix ( $serverVars['REDIRECT_BASE'] );
         } elseif (isset($serverVars['SCRIPT_FILENAME']) && isset($serverVars['SCRIPT_NAME'])) {
             // Fallback - get context out of script path
             if (isset($serverVars['HTTP_HOST'])) {
@@ -55,8 +55,8 @@ trait RequestParser
     {
         // All beyond the context prefix is our application request uri
         $contextUri = $uri;
-        if (null != $request->contextPrefix && '/' != $request->contextPrefix) {
-            $contextUri = str_replace($request->contextPrefix, '', $uri);
+        if (null != $request->getContextPrefix() && '/' != $request->getContextPrefix()) {
+        	$contextUri = str_replace($request->getContextPrefix(), '', $uri);
         }
         
         // Split parts
@@ -70,19 +70,19 @@ trait RequestParser
         
         // Check if there was a controller requested
         if (count($parts) > 0) {
-            $request->controller = ucfirst(trim($parts[0]));
+            $request->setController( ucfirst(trim($parts[0])) );
             array_shift($parts);
-            if (! $request->controller) {
-                $request->controller = $defaultController;
+            if (! $request->getController()) {
+                $request->setController( $defaultController );
             }
         }
         
         // Check if there was an action requested
         if (count($parts) > 0) {
-            $request->action = trim($parts[0]);
+            $request->setAction( trim($parts[0]) );
             array_shift($parts);
-            if (! $request->action) {
-                $request->action = $defaultAction;
+            if (! $request->getAction()) {
+                $request->setAction( $defaultAction );
             }
         }
         
@@ -105,7 +105,7 @@ trait RequestParser
     		$serverVars, $elementName, $paramName)
     {
         if (isset($serverVars[$elementName])) {
-            $req->params[$paramName] = $serverVars[$elementName];
+        	$req->setParam( $paramName, $serverVars[$elementName] );
         }
     }
 

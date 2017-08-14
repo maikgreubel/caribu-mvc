@@ -11,6 +11,7 @@ use \Nkey\Caribu\Mvc\View\View;
 use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerAwareTrait;
 use \Psr\Log\NullLogger;
+use Nkey\Caribu\Mvc\Router\AbstractRouter;
 
 /**
  * The MVC Application main class
@@ -113,6 +114,12 @@ final class Application implements LoggerAwareInterface
      * @var array
      */
     private $jsFiles = array();
+    
+    /**
+     * Router object
+     * @var AbstractRouter
+     */
+    private $router;
 
     /**
      * Get application instance
@@ -311,18 +318,22 @@ final class Application implements LoggerAwareInterface
      */
     public function registerController($controller, $applicationName = 'default')
     {
-        if (! class_exists($controller)) {
-            throw new ControllerException("No such controller class {controller} found", array(
-                'controller' => $controller
-            ));
+    	if ( !$controller instanceof \Nkey\Caribu\Mvc\Controller\AbstractController ) {
+	        if (! class_exists($controller)) {
+	            throw new ControllerException("No such controller class {controller} found", array(
+	                'controller' => $controller
+	            ));
+	        }
+	        $c = new $controller();
+	        if (! ($c instanceof AbstractController)) {
+	            throw new ControllerException("Controller {controller} is not in application scope", array(
+	                'controller' => $controller
+	            ));
+	        }
+    	}
+        else {
+        	$c = $controller;
         }
-        $c = new $controller();
-        if (! ($c instanceof AbstractController)) {
-            throw new ControllerException("Controller {controller} is not in application scope", array(
-                'controller' => $controller
-            ));
-        }
-        
         $settings = $c->getControllerSettings();
         $this->controllers[$applicationName][$settings->getControllerSimpleName()] = $settings;
         
@@ -363,31 +374,37 @@ final class Application implements LoggerAwareInterface
             'action' => $action
         ));
         
-        if (! isset($this->controllers[$applicationName][$controller])) {
-            $this->getLogger()->error("[{remote}] No such controller {controller}", array(
-                'remote' => $request->getRemoteHost(),
-                'controller' => $controller
-            ));
-            $controller = 'Error';
-            $action = 'error';
+        if ( null != $this->router && $this->router->hasRoute($action) ) {
+        	$controllerInstance = $this->router->route($action, $request);
+        	$action = $request->getAction();
         }
-        
-        $controllerInstance = $this->controllers[$applicationName][$controller];
-        assert($controllerInstance instanceof AbstractController);
-        if (! $controllerInstance->hasAction($action)) {
-            $this->getLogger()->error("[{remote}] No such action {action}", array(
-                'remote' => $request->getRemoteHost(),
-                'action' => $action
-            ));
-            $controllerInstance = $this->controllers[$applicationName]['Error'];
-            $action = 'error';
+        else {
+	        if (! isset($this->controllers[$applicationName][$controller])) {
+	            $this->getLogger()->error("[{remote}] No such controller {controller}", array(
+	                'remote' => $request->getRemoteHost(),
+	                'controller' => $controller
+	            ));
+	            $controller = 'Error';
+	            $action = 'error';
+	        }
+	        
+	        $controllerInstance = $this->controllers[$applicationName][$controller];
+	        assert($controllerInstance instanceof AbstractController);
+	        if (! $controllerInstance->hasAction($action)) {
+	            $this->getLogger()->error("[{remote}] No such action {action}", array(
+	                'remote' => $request->getRemoteHost(),
+	                'action' => $action
+	            ));
+	            $controllerInstance = $this->controllers[$applicationName]['Error'];
+	            $action = 'error';
+	        }
+	        
+	        $this->getLogger()->debug("[{remote}] Routing request to {controller}:{action}", array(
+	            'remote' => $request->getRemoteHost(),
+	            'controller' => $controller,
+	            'action' => $action
+	        ));
         }
-        
-        $this->getLogger()->debug("[{remote}] Routing request to {controller}:{action}", array(
-            'remote' => $request->getRemoteHost(),
-            'controller' => $controller,
-            'action' => $action
-        ));
         
         $view = $this->getViewBestMatch($request, $applicationName);
         
@@ -440,6 +457,19 @@ final class Application implements LoggerAwareInterface
         }
         
         return $response;
+    }
+    
+    /**
+     * Register a new Router
+     * 
+     * @param AbstractRouter $router
+     * @return Application the current application instance
+     */
+    public function registerRouter(AbstractRouter $router)
+    {
+    	$this->router = $router;
+    	$this->router->setApplication($this);
+    	return $this;
     }
 
     /**
