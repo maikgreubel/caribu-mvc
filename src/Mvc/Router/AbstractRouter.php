@@ -71,13 +71,21 @@ abstract class AbstractRouter {
 		$found = false;
 		for($i = 0; $i < count($parts); $i++) {
 			if($parts[$i] === $name && isset($parts[$i+1])) {
-				$request->setAction($parts[$i+1]);
+				$action = $parts[$i+1];
+				if(strpos($action, "?")) {
+					$action = strstr($action, "?");
+				}
+				
+				$request->setAction($action);
 				$found = true;
 			}
 		}
 		if(!$found) {
 			$request->setAction("index");
 		}
-		return $this->getRoute($name);
+		$controller = $this->getRoute($name);
+		$request->setController($controller->getControllerSimpleName());
+		
+		return $controller;
 	}
 }

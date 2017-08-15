@@ -34,6 +34,18 @@ class RoutingTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(0, count($request->getParams()));
 		$this->assertEquals('/routingTest/routed', $request->getOrigin());
 		$this->assertContains("flex'd", $response->getBody());
+	}
+	
+	public function testRoutingInclQueryString()
+	{
+		$request = Request::parse("/routingTest/routed?id=25&quote=ent");
 		
+		$response = Application::getInstance()->serve('default', array(), $request, false);
+
+		$this->assertEquals('Routed', $request->getController());
+		$this->assertEquals('index', $request->getAction());
+		$this->assertEquals(2, count($request->getParams()));
+		$this->assertEquals('/routingTest/routed?id=25&quote=ent', $request->getOrigin());
+		$this->assertContains("flex'd", $response->getBody());
 	}
 }
