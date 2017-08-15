@@ -73,7 +73,7 @@ abstract class AbstractRouter {
 			if($parts[$i] === $name && isset($parts[$i+1])) {
 				$action = $parts[$i+1];
 				if(strpos($action, "?")) {
-					$action = strstr($action, "?");
+					$action = strstr($action, "?", true);
 				}
 				
 				$request->setAction($action);
